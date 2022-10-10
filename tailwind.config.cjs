@@ -91,7 +91,6 @@ module.exports = {
         desktopGradient: "linear-gradient(100grad,#83fb26,#46f558);",
         desktopGradient: "linear-gradient(100grad,#32ebd3,#33dbe3)",
         mike: "url('../images/mike.jpg')",
-
       }),
       textShadow: {
         largeShadow: '0 192px 136px rgba(26,43,59,0.23),0 70px 50px rgba(26,43,59,0.16),0 34px 24px rgba(26,43,59,0.13),0 17px 12px rgba(26,43,59,0.1),0 7px 5px rgba(26,43,59,0.07);',
@@ -110,10 +109,8 @@ module.exports = {
         orange: '#fa6d3e',
         blue: '#3bf',
         azure: '#4E81B1',
-
         mercury: '#e1e5e9',
         gray: '#667380',
-
         tangaroa: {
           '50': '#E3EBF3',
           '100': '#C3D4E4',
