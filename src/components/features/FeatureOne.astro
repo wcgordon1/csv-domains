@@ -1,0 +1,97 @@
+---
+import { Code } from "astro/components";
+---
+
+<section aria-labelledby="feature-One" id="feature-One" class="bg-white">
+
+  <div
+    class="mx-auto max-w-7xl lg:px-16 md:px-12 px-8 xl:px-24 py-24 lg:py-48"
+  >
+    <div class="grid grid-cols-1 items-start md:grid-cols-2">
+      <div class="lg:pr-24 md:pr-12">
+        <span class="text-orange uppercase text-xs font-semibold"
+          >Feature One</span
+        ><h2 class="text-tangaroa-500 font-display font-semibold mt-6 text-3xl">
+          Includes Astro.js prismic
+        </h2>
+        <p class="text-tangaroa-400 mt-5">
+          Receive dividends bull investment mutual funds rise federal funds
+          strategy substantially treasury municipal public index funds.
+        </p>
+        <p class="text-tangaroa-400 mt-5">
+          Fall volatile rates funds Standard & Poor's market index upswing
+          financial health growth bear. Treasury 401k potential.
+        </p>
+      </div>
+      <div
+        class="lg:mt-0 mt-12 md:pl-12 md:border-l lg:pl-24 border-mercury-400 h-full"
+      >
+        <!-- Include these scripts somewhere on the page: -->
+        <div x-data x-tabs class="mx-auto">
+          <div x-tabs:list class="-mb-px flex items-stretch gap-1">
+            <button
+              x-tabs:tab
+              type="button"
+              :class="$tab.isSelected ? ' bg-mint focus:bg-mint' : 'bg-transparent'"
+              class="inline-flex rounded-full text-tangaroa-500 font-semibold px-3 py-2 text-xs"
+              >Open accounts</button
+            >
+            <button
+              x-tabs:tab
+              type="button"
+              :class="$tab.isSelected ? ' bg-mint focus:bg-mint' : 'bg-transparent'"
+              class="inline-flex rounded-full text-tangaroa-500 font-semibold px-3 py-2 text-xs"
+              >Create cards
+            </button>
+          </div>
+          <div x-tabs:panels class="rounded-b-md bg-white mt-6">
+            <section
+              x-tabs:panel
+              class="text-xs font-mono mt-4 rounded-2xl overflowhidden p-4 bg-[#1c1e28] shadow-card"
+            >
+              <Code
+                code={`import { defineConfig } from 'astro/config';
+import tailwind from "@astrojs/tailwind";
+import image from "@astrojs/image";
+import compress from "astro-compress";
+import partytown from "@astrojs/partytown";
+import sitemap from "@astrojs/sitemap";
+// https://astro.build/config
+export default defineConfig({
+   site: 'https://supremeuikits.com',
+  integrations: [tailwind(), image(), sitemap()]
+});}'`}
+                lang="js"
+                theme="poimandres"
+              />
+            </section>
+            <section
+              x-tabs:panel
+              class="text-xs font-mono mt-4 rounded-2xl overflowhidden p-4 bg-[#1c1e28] shadow-card"
+            >
+              <Code
+                code={`import { defineConfig } from 'astro/config';
+import tailwind from "@astrojs/tailwind";
+import image from "@astrojs/image";
+import compress from "astro-compress";
+import partytown from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
+import image from "@astrojs/image";
+import compress from "astro-vue";
+import partytown from "@astrojs/partytown";
+import sitemap from "@astrojs/sitemap";
+// https://astro.build/config
+export default defineConfig({
+   site: 'https://supremeuikits.com',
+  integrations: [tailwind(),  sitemap()]
+});}'`}
+                lang="js"
+                theme="poimandres"
+              />
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
