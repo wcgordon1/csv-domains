@@ -15,45 +15,45 @@ import WaveSquare from "@/components/fundations/icons/WaveSquare.astro";
 import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
 import ArrowIteration from "@/components/fundations/icons/ArrowIteration.astro";
 const data = [
-  {
-    icon: "Filters",
-    category: "ACH",
-    text: "Initiate ACH transactions, process both credits and debits, verify accounts in advance, and store frequently used details.",
+{
+    "icon": "Filters",
+    "category": "Bulk upload",
+    "text": "Upload your entire domain portfolio from Afternic, Spaceship, and SEDO in one click."
   },
   {
-    icon: "WaveSquare",
-    category: "Bank accounts",
-    text: "Create flexible account structures with unlimited unique account numbers.",
+    "icon": "WaveSquare",
+    "category": "Price management",
+    "text": "Update prices across all platforms at once, or adjust individual domains manually."
   },
   {
-    icon: "ArrowIteration",
-    category: "Cards",
-    text: "Generate custom cards for users, control authorizations in real-time, and set personalized limits.",
+    "icon": "ArrowIteration",
+    "category": "Lander settings",
+    "text": "Set nameservers or redirect URLs in bulk to control your landing pages."
   },
   {
-    icon: "Plus",
-    category: "Checks",
-    text: "Send customized checks globally via API or deposit them digitally using the dashboard.",
+    "icon": "Plus",
+    "category": "Export tools",
+    "text": "Download platform-ready CSVs tailored for Afternic, Spaceship, or SEDO."
   },
   {
-    icon: "Cursor",
-    category: "Wires",
-    text: "Execute instant wire transfers anytime during Fedwire’s operating hours.",
+    "icon": "Cursor",
+    "category": "Portfolio editor",
+    "text": "Quickly edit individual domains, prices, landers, and notes from one dashboard."
   },
   {
-    icon: "Persist",
-    category: "Real-time payments",
-    text: "Move funds to major banks within seconds instead of days.",
+    "icon": "Persist",
+    "category": "Sync updates",
+    "text": "Push changes across marketplaces to keep your listings consistent and current."
   },
   {
-    icon: "Camera",
-    category: "FedNow",
-    text: "A new Federal Reserve payment system enabling round-the-clock money transfers between participating banks.",
+    "icon": "Camera",
+    "category": "Error detection",
+    "text": "Catch format issues before uploading to avoid rejection or listing errors."
   },
   {
-    icon: "Stacked",
-    category: "Payment scheduling",
-    text: "Automate and schedule payments in advance to streamline financial operations.",
+    "icon": "Stacked",
+    "category": "Time-saving",
+    "text": "Automate your listing workflow and save hours managing your domain inventory."
   },
 ];
 ---
@@ -127,7 +127,7 @@ const data = [
     {
       data.map((section) => (
         <li class="group flex h-full justify-between flex-col gap-12 lg:gap-24 bg-white px-5 relative pt-6 pb-[30px] transition-all md:min-h-[150px] cursor-pointer hover:bg-base-50">
-          <a class="absolute inset-0" href="#_" aria-label={`Learn more about ${section.category}`} />
+          <a class="absolute inset-0" href="/forms/sign-up" aria-label={`Learn more about ${section.category}`} />
   
           <div>
             <div class="flex">
@@ -154,7 +154,7 @@ const data = [
             variant="textSM"
             class="flex items-center font-medium gap-2 text-base-800"
           >
-            Learn more
+            Sign up for free!
             <ChevronRight
               size="sm"
               class="duration-300 ease-out group-hover:translate-x-2"
