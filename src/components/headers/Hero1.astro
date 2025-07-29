@@ -31,7 +31,7 @@ import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
         data-aos-duration="1000"
         class="font-semibold tracking-tighter text-base-800 lg:text-balance"
       >
-        Powerful financial APIs for tech innovators
+        Update and Export your Domains for Sale
       </Text>
       <Text
         tag="p"
@@ -40,8 +40,7 @@ import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
         data-aos-duration="1500"
         class="max-w-lg mt-4 font-medium text-base-800 md:text-balance"
       >
-        Seamless, scalable infrastructure for managing funds store, transfer,
-        and reconcile money with ease.
+        Bulk update your domain name lists to Spaceship and Afternic. Pricing, purchase options, and more.
       </Text>
       <div
         data-aos="fade-up"
@@ -64,11 +63,11 @@ import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
         <Link
           size="base"
           variant="muted"
-          href="/forms/contact"
+          href="/blog/home"
           gap="xs"
           class="group"
         >
-          Contact sales
+          Blog articles
           <ChevronRight
             size="sm"
             class="duration-300 easy-out-in group-hover:translate-x-2"
@@ -87,22 +86,25 @@ import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
         data-aos="fade-up"
         data-aos-duration="2000"
         class="z-40 h-full p-8 text-xs scrollbar-hide rounded-xl shadow-2xl"
-        code={`await payments.transfer.create({
-amount: 25075,
-currency: "USD",
-from_account: {
-  id: "acct_everbank_112233445",
-  bank: "EverBank",
-  type: "Business Checking",
-},
-to_account: {
-  id: "acct_chase_556677889",
-  bank: "Chase",
-  type: "Savings",
-},
-initiated_at: "2025-03-14T14:32:00Z",
-status: "Pending",
-});`}
+        code={`const domains = [
+          { name: "toads.io", listed: true },
+          { name: "backspin.io", listed: false },
+          { name: "drewai.com", listed: true },
+          { name: "bestelectricianjobs.com", listed: true },
+          { name: "growthhacking.org", listed: false },
+        ];
+        
+        const csvHeader = "name,listed\\n";
+        const csvRows = domains
+          .map(d => \`\${d.name},\${d.listed}\`)
+          .join("\\n");
+        
+        const csvContent = csvHeader + csvRows;
+        
+        // Export Spaceship CSV file
+        // require("fs").writeFileSync("domains_export.csv", csvContent);
+        `}
+        
         lang="js"
         theme="css-variables"
       />
