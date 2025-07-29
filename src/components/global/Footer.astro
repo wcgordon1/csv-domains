@@ -8,25 +8,24 @@ const links = [
   {
     title: "Navigation",
     links: [
-      { label: "Overview", href: "/system/overview" },
-      { label: "Colors", href: "/system/colors" },
-      { label: "Links", href: "/system/links" },
-      { label: "Buttons", href: "/system/buttons" },
-      { label: "Typography", href: "/system/typography" },
+      { label: "Home", href: "/" },
+      { label: "Changelog", href: "/changelog/home" },
+      { label: "Team", href: "/team/home" },
+      { label: "Blog", href: "/blog/home" },
     ],
   },
   {
-    title: "More Themes",
+    title: "Recent Stuff",
     links: [
-      { label: "Lexington Themes", href: "https://www.lexingtonthemes.com" },
-      { label: "Oxbow UI", href: "https://www.oxbowui.com" },
+      { label: "StarterBuild", href: "https://starterbuild.com" },
+      { label: "PopResume", href: "https://popresume.com" },
     ],
   },
   {
-    title: "Stay updated",
+    title: "Terms & Privacy",
     links: [
       {
-        label: "License",
+        label: "Privacy Policy",
         href: "https://www.lexingtonthemes.com/legal/license",
       },
       {
@@ -58,7 +57,7 @@ const links = [
             variant="textXS"
             class="text-base-800 font-medium mt-2"
           >
-            © Spazio Bianco
+            © CSV Domains
           </Text>
         </div>
         {
@@ -104,6 +103,6 @@ const links = [
   document.addEventListener("DOMContentLoaded", function () {
     const yearElement = document.getElementById("year");
     const currentYear = new Date().getFullYear();
-    yearElement.textContent = `© ${currentYear} Spazio Bianco`;
+    yearElement.textContent = `© ${currentYear} CSV Domains`;
   });
 </script>
