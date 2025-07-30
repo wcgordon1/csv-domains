@@ -16,6 +16,10 @@ const { session } = await auth.getSession();
 const isAuthenticated = !!session?.user;
 
 const navigationLinks = [
+{
+    title: "Analytics",
+    href: "/analytics",
+  },
   {
     title: "Changelog",
     href: "/changelog/home",
