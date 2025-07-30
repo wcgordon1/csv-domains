@@ -1,6 +1,7 @@
-Domain,Buy Now Price,Floor Price,Min Offer,Lease to Own,Max Lease Period,Sale Lander,Show Buy Now Option,Show Lease to Own Option,Show Make Offer Option,Hidden
-example.com,5000,1000,500,Y,12,https://example.com/landing,Y,Y,Y,N
-testdomain.net,,500,,,,,,,
-mydomain.org,10000,0,1000,Y,36,,N,Y,Y,
-bestdomain.io,,1500,,N,18,https://bestdomain.io/purchase,Y,,N,Y
-awesomesite.co,,600,300,,,https://awesomesite.co/landing,,,Y,
+Domain,Buy Now Price,Floor Price,Min Offer,Lease to Own,Max Lease Period,Sale Lander,Show Buy Now Option,Show Lease to Own Option,Show Make Offer Option,Hidden,Category,Registrar,Expiry Date
+example.com,5000,1000,500,Y,12,https://example.com/landing,Y,Y,Y,N,Technology,GoDaddy,2024-12-31
+testdomain.net,,500,,,,,,,,,Business,Namecheap,2025-06-15
+mydomain.org,10000,0,1000,Y,36,,N,Y,Y,,Personal,Domain.com,2024-08-20
+bestdomain.io,,1500,,N,18,https://bestdomain.io/purchase,Y,,N,Y,Tech Startup,Porkbun,2025-03-10
+awesomesite.co,,600,300,,,https://awesomesite.co/landing,,,Y,,Creative,Google Domains,2024-11-05
+premium-domain.com,25000,5000,2500,N,,https://premium-domain.com,Y,N,Y,N,Premium,Sedo,2025-01-15

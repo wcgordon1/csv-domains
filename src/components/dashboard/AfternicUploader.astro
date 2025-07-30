@@ -81,7 +81,7 @@ import CSVDataGrid from "./CSVDataGrid.astro";
     <div class="flex justify-between items-center mb-4">
       <div>
         <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
-          CSV Data
+          Afternic Domains
         </Text>
         <Text tag="p" variant="textSM" class="text-base-600" id="row-count">
           0 Domains
@@ -93,16 +93,18 @@ import CSVDataGrid from "./CSVDataGrid.astro";
           variant="muted" 
           size="sm"
           id="download-btn"
+          class="cursor-pointer"
         >
-          Download CSV
+          Download
         </Button>
         <Button 
           type="button" 
           variant="default" 
           size="sm"
           id="reset-btn"
+          class="cursor-pointer"
         >
-          Upload New File
+          New File
         </Button>
       </div>
     </div>
@@ -113,9 +115,9 @@ import CSVDataGrid from "./CSVDataGrid.astro";
 
 <script>
   import * as Papa from 'papaparse';
-  import { validateCSVFile, validateDomainRow, normalizeCSVData, convertToCSV, CSV_HEADERS, type AfternicDomain } from '../../lib/csvProcessor';
+  import { validateCSVFile, validateDomainRow, normalizeCSVData, convertToCSV, type CSVData } from '../../lib/csvProcessor';
 
-  let csvData: AfternicDomain[] = [];
+  let csvData: CSVData = { headers: [], rows: [] };
 
   document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('csv-file-input') as HTMLInputElement;
@@ -164,7 +166,7 @@ import CSVDataGrid from "./CSVDataGrid.astro";
     // Listen for data updates from the grid
     window.addEventListener('csv-data-updated', (event: any) => {
       csvData = event.detail.data;
-      updateRowCount(csvData.length);
+      updateRowCount(csvData.rows.length);
     });
 
     async function handleFileUpload(event: Event) {
@@ -194,26 +196,9 @@ import CSVDataGrid from "./CSVDataGrid.astro";
         Papa.parse(file, {
           header: true,
           skipEmptyLines: true,
-          transformHeader: (header: string) => {
-            // Normalize header names to match our expected format
-            const headerMap: { [key: string]: string } = {
-              'Domain': 'domain',
-              'Buy Now Price': 'buyNowPrice',
-              'Floor Price': 'floorPrice',
-              'Min Offer': 'minOffer',
-              'Lease to Own': 'leaseToOwn',
-              'Max Lease Period': 'maxLeasePeriod',
-              'Sale Lander': 'saleLander',
-              'Show Buy Now Option': 'showBuyNowOption',
-              'Show Lease to Own Option': 'showLeaseToOwnOption',
-              'Show Make Offer Option': 'showMakeOfferOption',
-              'Hidden': 'hidden'
-            };
-            return headerMap[header] || header.toLowerCase().replace(/\s+/g, '');
-          },
           complete: (results) => {
             hideProgress();
-            processParsedData(results.data);
+            processParsedData(results.data, results.meta.fields || []);
           },
           error: (error) => {
             hideProgress();
@@ -226,9 +211,14 @@ import CSVDataGrid from "./CSVDataGrid.astro";
       }
     }
 
-    function processParsedData(rawData: any[]) {
+    function processParsedData(rawData: any[], headers: string[]) {
       if (!rawData || rawData.length === 0) {
         showError('No data found in CSV file');
+        return;
+      }
+
+      if (!headers || headers.length === 0) {
+        showError('No headers found in CSV file');
         return;
       }
 
@@ -251,10 +241,10 @@ import CSVDataGrid from "./CSVDataGrid.astro";
       }
 
       // Normalize and store data
-      csvData = normalizeCSVData(validatedData);
+      csvData = normalizeCSVData(validatedData, headers);
       
       // Update UI
-      updateRowCount(csvData.length);
+      updateRowCount(csvData.rows.length);
       showDataSection();
 
       // Initialize data grid
@@ -296,7 +286,7 @@ import CSVDataGrid from "./CSVDataGrid.astro";
 
     function updateRowCount(count: number) {
       if (rowCount) {
-        rowCount.textContent = `${count} rows loaded`;
+        rowCount.textContent = `${count} domains found`;
       }
     }
 
@@ -309,7 +299,7 @@ import CSVDataGrid from "./CSVDataGrid.astro";
     }
 
     function downloadCSV() {
-      if (csvData.length === 0) return;
+      if (csvData.rows.length === 0) return;
 
       const csvContent = convertToCSV(csvData);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -318,7 +308,7 @@ import CSVDataGrid from "./CSVDataGrid.astro";
       if (link.download !== undefined) {
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `afternic_domains_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute('download', `csv_data_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -327,7 +317,7 @@ import CSVDataGrid from "./CSVDataGrid.astro";
     }
 
     function resetUploader() {
-      csvData = [];
+      csvData = { headers: [], rows: [] };
       if (fileInput) {
         fileInput.value = '';
       }
@@ -336,7 +326,7 @@ import CSVDataGrid from "./CSVDataGrid.astro";
       hideDataSection();
     }
 
-    function initializeDataGrid(data: AfternicDomain[]) {
+    function initializeDataGrid(data: CSVData) {
       // This will be handled by the CSVDataGrid component
       window.dispatchEvent(new CustomEvent('csv-data-loaded', { 
         detail: { data } 

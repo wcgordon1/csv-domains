@@ -12,50 +12,35 @@ import Text from "@/components/fundations/elements/Text.astro";
       </Text>
     </div>
 
+    <!-- Bulk Actions -->
+    <div id="bulk-actions" class="hidden bg-base-50 border-b border-base-200 px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <Text tag="span" variant="textSM" class="text-base-600" id="selected-count">
+            0 rows selected
+          </Text>
+          <button id="select-all-btn" class="text-sm text-teal-600 hover:text-teal-700 cursor-pointer">
+            Select All
+          </button>
+          <button id="deselect-all-btn" class="text-sm text-base-600 hover:text-base-700 cursor-pointer">
+            Deselect All
+          </button>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="bulk-edit-btn" class="hidden px-3 py-1 text-sm text-teal-600 hover:text-teal-700 border border-teal-300 rounded hover:bg-teal-50 cursor-pointer">
+            Edit All
+          </button>
+          <button id="bulk-delete-btn" class="hidden px-3 py-1 text-sm text-red-600 hover:text-red-700 border border-red-300 rounded hover:bg-red-50 cursor-pointer">
+            Delete Selected
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Data grid table -->
     <table id="data-grid-table" class="min-w-full divide-y divide-base-200 hidden">
-      <thead class="bg-base-50">
-        <tr>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider sticky left-0 bg-base-50 border-r border-base-200">
-            #
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[200px]">
-            Domain
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px]">
-            Buy Now Price
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px]">
-            Floor Price
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px]">
-            Min Offer
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px]">
-            Lease to Own
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[140px]">
-            Max Lease Period
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[200px]">
-            Sale Lander
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[140px]">
-            Show Buy Now
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[140px]">
-            Show Lease to Own
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[140px]">
-            Show Make Offer
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[100px]">
-            Hidden
-          </th>
-          <th class="px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider w-[80px]">
-            Actions
-          </th>
-        </tr>
+      <thead class="bg-base-50" id="data-grid-header">
+        <!-- Headers will be dynamically generated -->
       </thead>
       <tbody id="data-grid-body" class="bg-white divide-y divide-base-200">
         <!-- Rows will be dynamically generated -->
@@ -69,36 +54,14 @@ import Text from "@/components/fundations/elements/Text.astro";
       </Text>
     </div>
   </div>
-
-  <!-- Bulk Actions -->
-  <div id="bulk-actions" class="hidden bg-base-50 border-t border-base-200 px-4 py-3">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-4">
-        <Text tag="span" variant="textSM" class="text-base-600" id="selected-count">
-          0 rows selected
-        </Text>
-        <button id="select-all-btn" class="text-sm text-teal-600 hover:text-teal-700">
-          Select All
-        </button>
-        <button id="deselect-all-btn" class="text-sm text-base-600 hover:text-base-700">
-          Deselect All
-        </button>
-      </div>
-      <div class="flex items-center space-x-2">
-        <button id="bulk-delete-btn" class="px-3 py-1 text-sm text-red-600 hover:text-red-700 border border-red-300 rounded hover:bg-red-50">
-          Delete Selected
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Edit Modal -->
 <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
   <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
       <div class="flex justify-between items-center mb-4">
-        <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
+        <Text tag="h3" variant="textLG" class="font-semibold text-base-800" id="modal-title">
           Edit Row
         </Text>
         <button id="close-modal-btn" class="text-base-400 hover:text-base-600">
@@ -109,84 +72,9 @@ import Text from "@/components/fundations/elements/Text.astro";
       </div>
       <form id="edit-form" class="space-y-4">
         <input type="hidden" id="edit-row-index" />
-        
-        <div>
-          <label class="block text-sm font-medium text-base-700 mb-1">Domain</label>
-          <input type="text" id="edit-domain" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" required />
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-base-700 mb-1">Buy Now Price (optional)</label>
-            <input type="number" id="edit-buy-now-price" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" min="0" step="0.01" placeholder="Leave blank if not applicable" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-base-700 mb-1">Floor Price</label>
-            <input type="number" id="edit-floor-price" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" min="0" step="0.01" />
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-base-700 mb-1">Min Offer (optional)</label>
-            <input type="number" id="edit-min-offer" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" min="0" step="0.01" placeholder="Leave blank if not applicable" />
-          </div>
-                  <div>
-          <label class="block text-sm font-medium text-base-700 mb-1">Lease to Own (optional)</label>
-          <select id="edit-lease-to-own" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <option value="">-- Blank --</option>
-            <option value="Y">Y</option>
-            <option value="N">N</option>
-          </select>
-        </div>
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-base-700 mb-1">Max Lease Period (2-60, optional)</label>
-          <input type="number" id="edit-max-lease-period" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" min="2" max="60" placeholder="Leave blank if not applicable" />
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-base-700 mb-1">Sale Lander (optional)</label>
-          <input type="text" id="edit-sale-lander" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Leave blank if not applicable" />
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-base-700 mb-1">Show Buy Now (optional)</label>
-            <select id="edit-show-buy-now" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option value="">-- Blank --</option>
-              <option value="Y">Y</option>
-              <option value="N">N</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-base-700 mb-1">Show Lease to Own (optional)</label>
-            <select id="edit-show-lease-to-own" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option value="">-- Blank --</option>
-              <option value="Y">Y</option>
-              <option value="N">N</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-base-700 mb-1">Show Make Offer (optional)</label>
-            <select id="edit-show-make-offer" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option value="">-- Blank --</option>
-              <option value="Y">Y</option>
-              <option value="N">N</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-base-700 mb-1">Hidden (optional)</label>
-            <select id="edit-hidden" class="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option value="">-- Blank --</option>
-              <option value="Y">Y</option>
-              <option value="N">N</option>
-            </select>
-          </div>
+        <input type="hidden" id="edit-mode" value="single" />
+        <div id="edit-fields-container" class="space-y-4">
+          <!-- Fields will be dynamically generated -->
         </div>
         
         <div class="flex justify-end space-x-3 pt-4 border-t border-base-200">
@@ -194,7 +82,7 @@ import Text from "@/components/fundations/elements/Text.astro";
             Cancel
           </button>
           <button type="submit" class="px-4 py-2 text-sm text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700">
-            Save Changes
+            <span id="save-btn-text">Save Changes</span>
           </button>
         </div>
       </form>
@@ -203,15 +91,16 @@ import Text from "@/components/fundations/elements/Text.astro";
 </div>
 
 <script>
-  import type { AfternicDomain } from '../../lib/csvProcessor';
+  import type { CSVData, AfternicDomain } from '../../lib/csvProcessor';
 
-  let gridData: AfternicDomain[] = [];
+  let csvData: CSVData = { headers: [], rows: [] };
   let selectedRows = new Set<number>();
 
   document.addEventListener('DOMContentLoaded', () => {
     const gridLoading = document.getElementById('grid-loading');
     const gridTable = document.getElementById('data-grid-table');
     const gridEmpty = document.getElementById('grid-empty');
+    const gridHeader = document.getElementById('data-grid-header');
     const gridBody = document.getElementById('data-grid-body');
     const bulkActions = document.getElementById('bulk-actions');
     const selectedCount = document.getElementById('selected-count');
@@ -219,7 +108,7 @@ import Text from "@/components/fundations/elements/Text.astro";
 
     // Listen for CSV data loaded event
     window.addEventListener('csv-data-loaded', (event: any) => {
-      gridData = event.detail.data;
+      csvData = event.detail.data;
       renderGrid();
     });
 
@@ -227,6 +116,7 @@ import Text from "@/components/fundations/elements/Text.astro";
     document.getElementById('select-all-btn')?.addEventListener('click', selectAll);
     document.getElementById('deselect-all-btn')?.addEventListener('click', deselectAll);
     document.getElementById('bulk-delete-btn')?.addEventListener('click', deleteSelected);
+    document.getElementById('bulk-edit-btn')?.addEventListener('click', editSelected);
 
     // Modal handlers
     document.getElementById('close-modal-btn')?.addEventListener('click', closeModal);
@@ -234,53 +124,55 @@ import Text from "@/components/fundations/elements/Text.astro";
     document.getElementById('edit-form')?.addEventListener('submit', saveEdit);
 
     function renderGrid() {
-      if (!gridBody) return;
+      if (!gridBody || !gridHeader) return;
 
-      if (gridData.length === 0) {
+      if (csvData.rows.length === 0) {
         showEmpty();
         return;
       }
 
       showTable();
       
+      // Render headers
+      renderHeaders();
+      
       // Clear existing rows
       gridBody.innerHTML = '';
 
       // Render data rows
-      gridData.forEach((row, index) => {
+      csvData.rows.forEach((row, index) => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-base-50';
-        tr.innerHTML = `
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900 sticky left-0 bg-white border-r border-base-200">
-            <input type="checkbox" class="row-checkbox" data-index="${index}" />
-          </td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900 font-medium">${escapeHtml(row.domain)}</td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">${row.buyNowPrice ? '$' + row.buyNowPrice.toFixed(2) : ''}</td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">$${row.floorPrice.toFixed(2)}</td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">${row.minOffer ? '$' + row.minOffer.toFixed(2) : ''}</td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">
-            ${row.leaseToOwn ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row.leaseToOwn === 'Y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${row.leaseToOwn}</span>` : ''}
-          </td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">${row.maxLeasePeriod ?? ''}</td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">${escapeHtml(row.saleLander)}</td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">
-            ${row.showBuyNowOption ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row.showBuyNowOption === 'Y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${row.showBuyNowOption}</span>` : ''}
-          </td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">
-            ${row.showLeaseToOwnOption ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row.showLeaseToOwnOption === 'Y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${row.showLeaseToOwnOption}</span>` : ''}
-          </td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">
-            ${row.showMakeOfferOption ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row.showMakeOfferOption === 'Y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${row.showMakeOfferOption}</span>` : ''}
-          </td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">
-            ${row.hidden ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row.hidden === 'Y' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}">${row.hidden}</span>` : ''}
-          </td>
-          <td class="px-3 py-4 whitespace-nowrap text-sm text-base-900">
-            <button class="edit-btn text-teal-600 hover:text-teal-700" data-index="${index}">
-              Edit
-            </button>
-          </td>
-        `;
+        
+        // Checkbox column
+        const checkboxTd = document.createElement('td');
+        checkboxTd.className = 'px-3 py-4 whitespace-nowrap text-sm text-base-900 sticky left-0 bg-white border-r border-base-200';
+        checkboxTd.innerHTML = `<input type="checkbox" class="row-checkbox" data-index="${index}" />`;
+        tr.appendChild(checkboxTd);
+        
+        // Data columns
+        csvData.headers.forEach(header => {
+          const td = document.createElement('td');
+          td.className = 'px-3 py-4 whitespace-nowrap text-sm text-base-900';
+          const value = row[header] || '';
+          
+          // Format Y/N values with badges
+          if (value.toUpperCase() === 'Y' || value.toUpperCase() === 'N') {
+            const badgeColor = value.toUpperCase() === 'Y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+            td.innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeColor}">${value.toUpperCase()}</span>`;
+          } else {
+            td.textContent = value;
+          }
+          
+          tr.appendChild(td);
+        });
+        
+        // Actions column
+        const actionsTd = document.createElement('td');
+        actionsTd.className = 'px-3 py-4 whitespace-nowrap text-sm text-base-900';
+        actionsTd.innerHTML = `<button class="edit-btn text-teal-600 hover:text-teal-700" data-index="${index}">Edit</button>`;
+        tr.appendChild(actionsTd);
+        
         gridBody.appendChild(tr);
       });
 
@@ -298,6 +190,35 @@ import Text from "@/components/fundations/elements/Text.astro";
       });
 
       updateSelectionUI();
+    }
+
+    function renderHeaders() {
+      if (!gridHeader) return;
+      
+      gridHeader.innerHTML = '';
+      const tr = document.createElement('tr');
+      
+      // Checkbox header
+      const checkboxTh = document.createElement('th');
+      checkboxTh.className = 'px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider sticky left-0 bg-base-50 border-r border-base-200';
+      checkboxTh.textContent = '#';
+      tr.appendChild(checkboxTh);
+      
+      // Data headers
+      csvData.headers.forEach(header => {
+        const th = document.createElement('th');
+        th.className = 'px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px]';
+        th.textContent = header;
+        tr.appendChild(th);
+      });
+      
+      // Actions header
+      const actionsTh = document.createElement('th');
+      actionsTh.className = 'px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider w-[80px]';
+      actionsTh.textContent = 'Actions';
+      tr.appendChild(actionsTh);
+      
+      gridHeader.appendChild(tr);
     }
 
     function showTable() {
@@ -328,14 +249,26 @@ import Text from "@/components/fundations/elements/Text.astro";
     }
 
     function updateSelectionUI() {
+      const bulkEditBtn = document.getElementById('bulk-edit-btn');
+      const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+      
       if (selectedCount) {
         selectedCount.textContent = `${selectedRows.size} rows selected`;
+      }
+      
+      // Show/hide buttons based on selection count
+      if (selectedRows.size > 0) {
+        bulkEditBtn?.classList.remove('hidden');
+        bulkDeleteBtn?.classList.remove('hidden');
+      } else {
+        bulkEditBtn?.classList.add('hidden');
+        bulkDeleteBtn?.classList.add('hidden');
       }
     }
 
     function selectAll() {
       selectedRows.clear();
-      for (let i = 0; i < gridData.length; i++) {
+      for (let i = 0; i < csvData.rows.length; i++) {
         selectedRows.add(i);
       }
       
@@ -364,7 +297,7 @@ import Text from "@/components/fundations/elements/Text.astro";
         const sortedIndices = Array.from(selectedRows).sort((a, b) => b - a);
         
         sortedIndices.forEach(index => {
-          gridData.splice(index, 1);
+          csvData.rows.splice(index, 1);
         });
         
         selectedRows.clear();
@@ -372,30 +305,244 @@ import Text from "@/components/fundations/elements/Text.astro";
         
         // Update parent component
         window.dispatchEvent(new CustomEvent('csv-data-updated', { 
-          detail: { data: gridData } 
+          detail: { data: csvData } 
         }));
       }
     }
 
+    function editSelected() {
+      if (selectedRows.size === 0) return;
+      
+      if (selectedRows.size === 1) {
+        // Single edit
+        const index = Array.from(selectedRows)[0];
+        openEditModal(index);
+      } else {
+        // Bulk edit
+        openBulkEditModal();
+      }
+    }
+
+    function openBulkEditModal() {
+      const modalTitle = document.getElementById('modal-title');
+      const saveBtnText = document.getElementById('save-btn-text');
+      const editMode = document.getElementById('edit-mode') as HTMLInputElement;
+      
+      if (modalTitle) modalTitle.textContent = `Edit ${selectedRows.size} Rows`;
+      if (saveBtnText) saveBtnText.textContent = 'Update All Selected';
+      if (editMode) editMode.value = 'bulk';
+      
+      // Generate form fields with empty values for bulk editing
+      const fieldsContainer = document.getElementById('edit-fields-container');
+      if (!fieldsContainer) return;
+      
+      fieldsContainer.innerHTML = '';
+      
+      // Add notice for bulk editing
+      const notice = document.createElement('div');
+      notice.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4';
+      notice.innerHTML = `
+        <div class="flex">
+          <svg class="h-5 w-5 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div class="ml-3">
+            <p class="text-sm text-blue-800">
+              <strong>Bulk Edit Mode:</strong> Only fill in the fields you want to update. Empty fields will remain unchanged for all selected rows.
+            </p>
+          </div>
+        </div>
+      `;
+      fieldsContainer.appendChild(notice);
+      
+      // Fields to exclude from editing
+      const excludedFields = ['TLD', 'Date Added (UTC)', 'Fast Transfer', 'Listing Status', 'Views'];
+      const editableHeaders = csvData.headers.filter(header => !excludedFields.includes(header));
+      
+      editableHeaders.forEach((header, headerIndex) => {
+        const fieldDiv = document.createElement('div');
+        
+        if (headerIndex % 2 === 0 && headerIndex < editableHeaders.length - 1) {
+          // Start a new row for every even index
+          fieldDiv.className = 'grid grid-cols-2 gap-4';
+          
+          // Create first field
+          const firstFieldDiv = createFieldElement(header, csvData.headers.indexOf(header), true);
+          fieldDiv.appendChild(firstFieldDiv);
+          
+          // Create second field if it exists
+          if (headerIndex + 1 < editableHeaders.length) {
+            const secondHeader = editableHeaders[headerIndex + 1];
+            const secondFieldDiv = createFieldElement(secondHeader, csvData.headers.indexOf(secondHeader), true);
+            fieldDiv.appendChild(secondFieldDiv);
+          }
+          
+          fieldsContainer.appendChild(fieldDiv);
+        } else if (headerIndex === editableHeaders.length - 1 && headerIndex % 2 !== 0) {
+          // Handle the last field if it's odd-indexed
+          const singleFieldDiv = createFieldElement(header, csvData.headers.indexOf(header), true);
+          fieldsContainer.appendChild(singleFieldDiv);
+        }
+      });
+
+      editModal?.classList.remove('hidden');
+    }
+
     function openEditModal(index: number) {
-      const row = gridData[index];
+      const row = csvData.rows[index];
       if (!row) return;
+
+      const modalTitle = document.getElementById('modal-title');
+      const saveBtnText = document.getElementById('save-btn-text');
+      const editMode = document.getElementById('edit-mode') as HTMLInputElement;
+      
+      if (modalTitle) modalTitle.textContent = 'Edit Row';
+      if (saveBtnText) saveBtnText.textContent = 'Save Changes';
+      if (editMode) editMode.value = 'single';
 
       // Populate form
       (document.getElementById('edit-row-index') as HTMLInputElement).value = index.toString();
-      (document.getElementById('edit-domain') as HTMLInputElement).value = row.domain;
-      (document.getElementById('edit-buy-now-price') as HTMLInputElement).value = row.buyNowPrice?.toString() || '';
-      (document.getElementById('edit-floor-price') as HTMLInputElement).value = row.floorPrice.toString();
-      (document.getElementById('edit-min-offer') as HTMLInputElement).value = row.minOffer?.toString() || '';
-      (document.getElementById('edit-lease-to-own') as HTMLSelectElement).value = row.leaseToOwn || '';
-      (document.getElementById('edit-max-lease-period') as HTMLInputElement).value = row.maxLeasePeriod?.toString() || '';
-      (document.getElementById('edit-sale-lander') as HTMLInputElement).value = row.saleLander;
-      (document.getElementById('edit-show-buy-now') as HTMLSelectElement).value = row.showBuyNowOption || '';
-      (document.getElementById('edit-show-lease-to-own') as HTMLSelectElement).value = row.showLeaseToOwnOption || '';
-      (document.getElementById('edit-show-make-offer') as HTMLSelectElement).value = row.showMakeOfferOption || '';
-      (document.getElementById('edit-hidden') as HTMLSelectElement).value = row.hidden || '';
+      
+      // Generate dynamic form fields
+      const fieldsContainer = document.getElementById('edit-fields-container');
+      if (!fieldsContainer) return;
+      
+      fieldsContainer.innerHTML = '';
+      
+      // Fields to exclude from editing
+      const excludedFields = ['TLD', 'Date Added (UTC)', 'Fast Transfer', 'Listing Status', 'Views'];
+      const editableHeaders = csvData.headers.filter(header => !excludedFields.includes(header));
+      
+      editableHeaders.forEach((header, headerIndex) => {
+        const fieldDiv = document.createElement('div');
+        
+        if (headerIndex % 2 === 0 && headerIndex < editableHeaders.length - 1) {
+          // Start a new row for every even index
+          fieldDiv.className = 'grid grid-cols-2 gap-4';
+          
+          // Create first field
+          const originalIndex = csvData.headers.indexOf(header);
+          const firstFieldDiv = createFieldElement(header, originalIndex, false, row);
+          fieldDiv.appendChild(firstFieldDiv);
+          
+          // Create second field if it exists
+          if (headerIndex + 1 < editableHeaders.length) {
+            const secondHeader = editableHeaders[headerIndex + 1];
+            const secondOriginalIndex = csvData.headers.indexOf(secondHeader);
+            const secondFieldDiv = createFieldElement(secondHeader, secondOriginalIndex, false, row);
+            fieldDiv.appendChild(secondFieldDiv);
+          }
+          
+          fieldsContainer.appendChild(fieldDiv);
+        } else if (headerIndex === editableHeaders.length - 1 && headerIndex % 2 !== 0) {
+          // Handle the last field if it's odd-indexed
+          const originalIndex = csvData.headers.indexOf(header);
+          const singleFieldDiv = createFieldElement(header, originalIndex, false, row);
+          fieldsContainer.appendChild(singleFieldDiv);
+        }
+      });
 
       editModal?.classList.remove('hidden');
+    }
+
+    function createFieldElement(header: string, originalIndex: number, isBulkEdit: boolean, row?: any) {
+      const fieldDiv = document.createElement('div');
+      const label = document.createElement('label');
+      label.className = 'block text-sm font-medium text-base-700 mb-1';
+      label.textContent = header;
+
+      const yesNoFields = ['Lease to Own', 'Show Buy Now Option', 'Show Lease to Own Option', 'Show Make Offer Option', 'Hidden'];
+      
+      if (header === 'Max Lease Period') {
+        // Number input with validation for Max Lease Period
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = `edit-field-${originalIndex}`;
+        input.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+        input.min = '2';
+        input.max = '60';
+        input.placeholder = isBulkEdit ? 'Leave blank to keep current values' : '';
+        
+        if (!isBulkEdit && row) {
+          input.value = row[header] || '';
+        }
+
+        // Add validation
+        input.addEventListener('input', function() {
+          const value = parseInt(this.value);
+          const errorDiv = document.getElementById(`error-${originalIndex}`);
+          
+          if (this.value && (isNaN(value) || value < 2 || value > 60)) {
+            this.className = 'w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500';
+            if (!errorDiv) {
+              const error = document.createElement('div');
+              error.id = `error-${originalIndex}`;
+              error.className = 'text-red-600 text-xs mt-1';
+              error.textContent = 'Needs to be a value between 2 - 60';
+              fieldDiv.appendChild(error);
+            }
+          } else {
+            this.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+            if (errorDiv) {
+              errorDiv.remove();
+            }
+          }
+        });
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(input);
+        
+      } else if (yesNoFields.includes(header)) {
+        // Dropdown for Yes/No fields
+        const select = document.createElement('select');
+        select.id = `edit-field-${originalIndex}`;
+        select.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+        
+        // Add options
+        if (isBulkEdit) {
+          const blankOption = document.createElement('option');
+          blankOption.value = '';
+          blankOption.textContent = 'Keep current values';
+          select.appendChild(blankOption);
+        }
+        
+        const yesOption = document.createElement('option');
+        yesOption.value = 'Y';
+        yesOption.textContent = 'Yes';
+        select.appendChild(yesOption);
+        
+        const noOption = document.createElement('option');
+        noOption.value = 'N';
+        noOption.textContent = 'No';
+        select.appendChild(noOption);
+        
+        if (!isBulkEdit && row) {
+          const currentValue = row[header];
+          if (currentValue === 'Y' || currentValue === 'N') {
+            select.value = currentValue;
+          }
+        }
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(select);
+        
+      } else {
+        // Regular text input for other fields
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = `edit-field-${originalIndex}`;
+        input.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+        input.placeholder = isBulkEdit ? 'Leave blank to keep current values' : '';
+        
+        if (!isBulkEdit && row) {
+          input.value = row[header] || '';
+        }
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(input);
+      }
+
+      return fieldDiv;
     }
 
     function closeModal() {
@@ -405,38 +552,51 @@ import Text from "@/components/fundations/elements/Text.astro";
     function saveEdit(event: Event) {
       event.preventDefault();
       
-      const index = parseInt((document.getElementById('edit-row-index') as HTMLInputElement).value);
+      const editMode = (document.getElementById('edit-mode') as HTMLInputElement).value;
       
-      const buyNowPriceValue = (document.getElementById('edit-buy-now-price') as HTMLInputElement).value.trim();
-      const minOfferValue = (document.getElementById('edit-min-offer') as HTMLInputElement).value.trim();
-      const maxLeasePeriodValue = (document.getElementById('edit-max-lease-period') as HTMLInputElement).value.trim();
-      const leaseToOwnValue = (document.getElementById('edit-lease-to-own') as HTMLSelectElement).value;
-      const showBuyNowValue = (document.getElementById('edit-show-buy-now') as HTMLSelectElement).value;
-      const showLeaseToOwnValue = (document.getElementById('edit-show-lease-to-own') as HTMLSelectElement).value;
-      const showMakeOfferValue = (document.getElementById('edit-show-make-offer') as HTMLSelectElement).value;
-      const hiddenValue = (document.getElementById('edit-hidden') as HTMLSelectElement).value;
-      
-      const updatedRow: AfternicDomain = {
-        domain: (document.getElementById('edit-domain') as HTMLInputElement).value.trim(),
-        buyNowPrice: buyNowPriceValue ? parseFloat(buyNowPriceValue) : null,
-        floorPrice: parseFloat((document.getElementById('edit-floor-price') as HTMLInputElement).value) || 0,
-        minOffer: minOfferValue ? parseFloat(minOfferValue) : null,
-        leaseToOwn: leaseToOwnValue ? (leaseToOwnValue as 'Y' | 'N') : null,
-        maxLeasePeriod: maxLeasePeriodValue ? Math.min(Math.max(parseInt(maxLeasePeriodValue), 2), 60) : null,
-        saleLander: (document.getElementById('edit-sale-lander') as HTMLInputElement).value.trim(),
-        showBuyNowOption: showBuyNowValue ? (showBuyNowValue as 'Y' | 'N') : null,
-        showLeaseToOwnOption: showLeaseToOwnValue ? (showLeaseToOwnValue as 'Y' | 'N') : null,
-        showMakeOfferOption: showMakeOfferValue ? (showMakeOfferValue as 'Y' | 'N') : null,
-        hidden: hiddenValue ? (hiddenValue as 'Y' | 'N') : null,
-      };
+      if (editMode === 'bulk') {
+        // Bulk edit mode
+        const updates: { [key: string]: string } = {};
+        
+        // Collect non-empty values from form fields
+        csvData.headers.forEach((header, headerIndex) => {
+          const element = document.getElementById(`edit-field-${headerIndex}`) as HTMLInputElement | HTMLSelectElement;
+          if (element && element.value.trim() !== '') {
+            updates[header] = element.value.trim();
+          }
+        });
 
-      gridData[index] = updatedRow;
+        // Apply updates to all selected rows
+        selectedRows.forEach(index => {
+          Object.keys(updates).forEach(header => {
+            csvData.rows[index][header] = updates[header];
+          });
+        });
+        
+        selectedRows.clear();
+      } else {
+        // Single edit mode
+        const index = parseInt((document.getElementById('edit-row-index') as HTMLInputElement).value);
+        
+        const updatedRow: AfternicDomain = {};
+        
+        // Collect values from all dynamic fields
+        csvData.headers.forEach((header, headerIndex) => {
+          const element = document.getElementById(`edit-field-${headerIndex}`) as HTMLInputElement | HTMLSelectElement;
+          if (element) {
+            updatedRow[header] = element.value.trim();
+          }
+        });
+
+        csvData.rows[index] = updatedRow;
+      }
+
       renderGrid();
       closeModal();
 
       // Update parent component
       window.dispatchEvent(new CustomEvent('csv-data-updated', { 
-        detail: { data: gridData } 
+        detail: { data: csvData } 
       }));
     }
 
