@@ -27,10 +27,10 @@ export function validateCSVFile(file: File): { isValid: boolean; error?: string 
     return { isValid: false, error: 'Please upload a CSV file only.' };
   }
 
-  // Check file size (5MB limit)
-  const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+  // Check file size (10MB limit)
+  const maxSize = 10 * 1024 * 1024; // 10MB in bytes
   if (file.size > maxSize) {
-    return { isValid: false, error: 'File size must be under 5MB.' };
+    return { isValid: false, error: 'File size must be under 10MB.' };
   }
 
   return { isValid: true };
