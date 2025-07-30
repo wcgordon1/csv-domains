@@ -2,8 +2,8 @@
 import Text from "@/components/fundations/elements/Text.astro";
 ---
 
-<div class="overflow-x-auto border border-base-200 rounded-lg">
-  <div id="data-grid-container" class="min-w-full">
+<div class="border border-base-200 rounded-lg">
+  <div id="data-grid-container">
     <!-- Loading state -->
     <div id="grid-loading" class="p-8 text-center">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-4"></div>
@@ -12,8 +12,8 @@ import Text from "@/components/fundations/elements/Text.astro";
       </Text>
     </div>
 
-    <!-- Bulk Actions -->
-    <div id="bulk-actions" class="hidden bg-base-50 border-b border-base-200 px-4 py-3">
+    <!-- Bulk Actions - Fixed at top, full width -->
+    <div id="bulk-actions" class="hidden bg-base-50 border-b border-base-200 px-4 py-3 w-full">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <Text tag="span" variant="textSM" class="text-base-600" id="selected-count">
@@ -21,25 +21,28 @@ import Text from "@/components/fundations/elements/Text.astro";
           </Text>
         </div>
         <div class="flex items-center space-x-2">
-          <button id="bulk-edit-btn" class="hidden px-3 py-1 text-sm text-teal-600 hover:text-teal-700 border border-teal-300 rounded hover:bg-teal-50 cursor-pointer">
+          <button id="bulk-edit-btn" class="hidden px-3 py-1 text-sm text-teal-600 hover:text-teal-700 border border-teal-300 rounded hover:bg-teal-50 cursor-pointer whitespace-nowrap">
             Edit All
           </button>
-          <button id="bulk-delete-btn" class="hidden px-3 py-1 text-sm text-red-600 hover:text-red-700 border border-red-300 rounded hover:bg-red-50 cursor-pointer">
-            Delete Selected
+          <button id="bulk-delete-btn" class="hidden px-3 py-1 text-sm text-red-600 hover:text-red-700 border border-red-300 rounded hover:bg-red-50 cursor-pointer whitespace-nowrap">
+            Delete
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Data grid table -->
-    <table id="data-grid-table" class="min-w-full divide-y divide-base-200 hidden">
-      <thead class="bg-base-50" id="data-grid-header">
-        <!-- Headers will be dynamically generated -->
-      </thead>
-      <tbody id="data-grid-body" class="bg-white divide-y divide-base-200">
-        <!-- Rows will be dynamically generated -->
-      </tbody>
-    </table>
+    <!-- Scrollable table container -->
+    <div class="overflow-x-auto">
+      <!-- Data grid table -->
+      <table id="data-grid-table" class="min-w-full divide-y divide-base-200 hidden">
+        <thead class="bg-base-50" id="data-grid-header">
+          <!-- Headers will be dynamically generated -->
+        </thead>
+        <tbody id="data-grid-body" class="bg-white divide-y divide-base-200">
+          <!-- Rows will be dynamically generated -->
+        </tbody>
+      </table>
+    </div>
 
     <!-- Empty state -->
     <div id="grid-empty" class="hidden p-8 text-center">

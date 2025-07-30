@@ -6,7 +6,6 @@ education:
   - "UCLA, 2009"
 experience:
   - "Building since the 90s."
-  - "Domaining since a child."
 avatar:
   url: "/team/me.png"
   alt: "#_"
