@@ -1,0 +1,51 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Authentication">
+  <div class="min-h-screen flex items-center justify-center bg-base-50">
+    <div class="max-w-md w-full space-y-8 p-8">
+      <div class="text-center">
+        <h2 class="text-2xl font-semibold text-base-800">Verifying your email...</h2>
+        <p class="mt-2 text-base-600">Please wait while we sign you in.</p>
+      </div>
+      
+      <div class="flex justify-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { supabase } from '../../lib/supabase';
+
+    // Handle the auth callback
+    async function handleAuthCallback() {
+      try {
+        // Get the current session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Auth callback error:', error);
+          // Redirect to sign-in with error
+          window.location.href = '/auth/sign-in?error=verification_failed';
+          return;
+        }
+
+        if (session) {
+          // Successfully authenticated, redirect to dashboard
+          window.location.href = '/dashboard';
+        } else {
+          // No session found, redirect to sign-in
+          window.location.href = '/auth/sign-in?error=no_session';
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        window.location.href = '/auth/sign-in?error=unexpected';
+      }
+    }
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', handleAuthCallback);
+  </script>
+</BaseLayout> 

@@ -4,6 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 // https://astro.build/config
 export default defineConfig({
+  output: 'static',
   vite: {
     plugins: [tailwindcss()],
   },
@@ -19,6 +20,6 @@ export default defineConfig({
     drafts: true
   },
   devToolbar: { enabled: false },
-  site: 'https://yourdomain.com',
+  site: 'https://csv.domains', // Update this with your Cloudflare Pages URL
   integrations: [ sitemap(), mdx()]
 });
