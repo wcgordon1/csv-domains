@@ -1,11 +1,20 @@
 ---
-// Assetss
+// Assets
 import { Image } from "astro:assets";
 import LimeStripe from "@/images/assets/LimeStripe.png";
 // Fundations
 import Logo from "@/components/assets/Logo.astro";
 import Link from "@/components/fundations/elements/Link.astro";
 import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Components
+import PopupLogout from "@/components/global/PopupLogout.astro";
+// Auth
+import { auth } from "@/lib/auth";
+
+// Check if user is authenticated on server side
+const { session } = await auth.getSession();
+const isAuthenticated = !!session?.user;
+
 const navigationLinks = [
   {
     title: "Changelog",
@@ -18,10 +27,6 @@ const navigationLinks = [
   {
     title: "Blog",
     href: "/blog/home",
-  },
-  {
-    title: "Log in",
-    href: "/auth/sign-in",
   },
 ];
 ---
@@ -113,30 +118,50 @@ const navigationLinks = [
                 </a>
               ))
             }
+            <!-- Auth Links - conditionally rendered based on auth state -->
+            <a
+              id="auth-link"
+              href={isAuthenticated ? "#" : "/auth/sign-in"}
+              class={`hover:text-base-600 text-base-800 tracking-tighter md:tracking-normal font-semibold md:font-medium text-6xl md:text-base ${isAuthenticated ? 'cursor-pointer' : ''}`}
+              data-authenticated={isAuthenticated}
+            >
+              {isAuthenticated ? "Log out" : "Log in"}
+            </a>
           </div>
+          <!-- Primary CTA Button -->
           <Link
-            href="/auth/sign-up"
+            id="primary-cta"
+            href={isAuthenticated ? "/dashboard" : "/auth/sign-up"}
             size="sm"
             variant="accent"
             class="w-full md:w-auto"
+            data-authenticated={isAuthenticated}
           >
-            Sign up
+            {isAuthenticated ? "Dashboard" : "Sign up"}
           </Link>
         </div>
       </nav>
     </div>
   </Wrapper>
 </div>
+
+<!-- Add PopupLogout component -->
+<PopupLogout />
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  import { auth } from "@/lib/auth";
+
+  document.addEventListener("DOMContentLoaded", async () => {
     const menuToggle = document.getElementById("menu-toggle");
     const menuClose = document.getElementById("menu-close");
     const menuIcon = document.getElementById("menu-icon");
     const closeIcon = document.getElementById("close-icon");
     const navigationMenu = document.getElementById("navigation-menu");
+    const authLink = document.getElementById("auth-link");
+    const primaryCta = document.getElementById("primary-cta");
+
     // Toggle mobile menu
     function toggleMenu(open) {
-      console.log(`Toggling menu. Open: ${open}`); // Debug log to check the state of the toggle
+      console.log(`Toggling menu. Open: ${open}`);
       navigationMenu.classList.toggle("opacity-100", open);
       navigationMenu.classList.toggle("translate-y-0", open);
       navigationMenu.classList.toggle("pointer-events-auto", open);
@@ -147,8 +172,60 @@ const navigationLinks = [
       closeIcon.classList.toggle("hidden", !open);
     }
 
+    // Update UI based on auth state
+    function updateAuthUI(isAuthenticated) {
+      if (authLink) {
+        authLink.textContent = isAuthenticated ? "Log out" : "Log in";
+        (authLink as HTMLAnchorElement).href = isAuthenticated ? "#" : "/auth/sign-in";
+        authLink.dataset.authenticated = isAuthenticated.toString();
+      }
+      
+      if (primaryCta) {
+        primaryCta.textContent = isAuthenticated ? "Dashboard" : "Sign up";
+        (primaryCta as HTMLAnchorElement).href = isAuthenticated ? "/dashboard" : "/auth/sign-up";
+        primaryCta.dataset.authenticated = isAuthenticated.toString();
+      }
+    }
+
+    // Handle logout with confirmation popup
+    function handleLogout() {
+      // Show the styled popup instead of browser confirm
+      if ((window as any).logoutPopup) {
+        (window as any).logoutPopup.show();
+      } else {
+        // Fallback to browser confirm if popup isn't available
+        const confirmed = confirm("Are you sure you want to log out?");
+        if (confirmed) {
+          auth.signOut().catch((error) => {
+            console.error("Logout error:", error);
+            alert("Failed to log out. Please try again.");
+          });
+        }
+      }
+    }
+
+    // Check initial auth state
+    const { user } = await auth.getUser();
+    const isAuthenticated = !!user;
+    updateAuthUI(isAuthenticated);
+
+    // Listen to auth state changes
+    auth.onAuthStateChange((user) => {
+      const isAuthenticated = !!user;
+      updateAuthUI(isAuthenticated);
+    });
+
     // Event Listeners
-    menuToggle.addEventListener("click", () => toggleMenu(true));
-    menuClose.addEventListener("click", () => toggleMenu(false));
+    menuToggle?.addEventListener("click", () => toggleMenu(true));
+    menuClose?.addEventListener("click", () => toggleMenu(false));
+    
+    // Handle auth link clicks
+    authLink?.addEventListener("click", (e) => {
+      const isAuthenticated = authLink.dataset.authenticated === "true";
+      if (isAuthenticated) {
+        e.preventDefault();
+        handleLogout();
+      }
+    });
   });
 </script>

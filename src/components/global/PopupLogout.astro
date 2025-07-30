@@ -1,0 +1,162 @@
+---
+// Components
+import Button from "@/components/fundations/elements/Button.astro";
+import Logo from "@/components/assets/Logo.astro";
+---
+
+<!-- Logout Confirmation Popup -->
+<div
+  id="logout-popup"
+  class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="logout-title"
+  aria-describedby="logout-description"
+>
+  <!-- Backdrop -->
+  <div 
+    class="fixed inset-0 bg-base-950/50 backdrop-blur transition-opacity"
+    id="logout-overlay"
+  ></div>
+  
+  <!-- Modal Content -->
+  <div class="relative w-full max-w-md mx-4">
+    <div class="bg-white bg-stripes rounded-xl shadow-2xl border border-base-200 overflow-hidden">
+      <div class="bg-white p-6 border-x border-base-200">
+        <!-- Logo -->
+        <div class="flex justify-start mb-6">
+          <Logo class="h-8 text-base-800" />
+        </div>
+        
+        <!-- Header -->
+        <div class="mb-6">
+          <h3 id="logout-title" class="text-lg font-semibold text-base-800 mb-2">
+            Log out of your account?
+          </h3>
+          <p id="logout-description" class="text-base-600">
+            You'll need to sign in again to access your dashboard and account features.
+          </p>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex flex-col-reverse sm:flex-row gap-12 sm:gap-4">
+          <!-- Cancel Button -->
+          <Button
+            id="cancel-logout"
+            variant="muted"
+            size="sm"
+            class="w-full sm:w-auto cursor-pointer"
+          >
+            Cancel
+          </Button>
+          
+          <!-- Confirm Logout Button -->
+          <Button
+            id="confirm-logout"
+            variant="default"
+            size="sm"
+            class="w-full sm:w-auto cursor-pointer"
+          >
+            Log out
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Import auth dynamically to avoid TS issues
+    const { auth } = await import("@/lib/auth");
+
+    class LogoutPopup {
+      private popup: HTMLElement | null = null;
+      private overlay: HTMLElement | null = null;
+      private cancelBtn: HTMLElement | null = null;
+      private confirmBtn: HTMLElement | null = null;
+
+      constructor() {
+        this.popup = document.getElementById("logout-popup");
+        this.overlay = document.getElementById("logout-overlay");
+        this.cancelBtn = document.getElementById("cancel-logout");
+        this.confirmBtn = document.getElementById("confirm-logout");
+        
+        this.init();
+      }
+
+      private init() {
+        // Bind event listeners
+        this.cancelBtn?.addEventListener("click", () => this.hide());
+        this.confirmBtn?.addEventListener("click", () => this.handleLogout());
+        this.overlay?.addEventListener("click", () => this.hide());
+        
+        // Handle escape key
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && this.isVisible()) {
+            this.hide();
+          }
+        });
+      }
+
+      public show() {
+        if (this.popup) {
+          this.popup.classList.remove("opacity-0", "pointer-events-none");
+          this.popup.classList.add("opacity-100", "pointer-events-auto");
+          
+          // Focus management for accessibility
+          this.confirmBtn?.focus();
+          
+          // Prevent body scroll
+          document.body.style.overflow = "hidden";
+        }
+      }
+
+      public hide() {
+        if (this.popup) {
+          this.popup.classList.add("opacity-0", "pointer-events-none");
+          this.popup.classList.remove("opacity-100", "pointer-events-auto");
+          
+          // Restore body scroll
+          document.body.style.overflow = "";
+        }
+      }
+
+      private isVisible(): boolean {
+        return this.popup?.classList.contains("opacity-100") ?? false;
+      }
+
+      private async handleLogout() {
+        try {
+          // Disable button to prevent double-clicks
+          if (this.confirmBtn) {
+            this.confirmBtn.textContent = "Logging out...";
+            (this.confirmBtn as HTMLButtonElement).disabled = true;
+          }
+          
+          await auth.signOut();
+          // auth.signOut() already handles redirection
+        } catch (error) {
+          console.error("Logout error:", error);
+          alert("Failed to log out. Please try again.");
+          
+          // Re-enable button on error
+          if (this.confirmBtn) {
+            this.confirmBtn.textContent = "Log out";
+            (this.confirmBtn as HTMLButtonElement).disabled = false;
+          }
+        }
+      }
+    }
+
+    // Export for use in Navigation
+    (window as any).logoutPopup = new LogoutPopup();
+  });
+</script>
+
+<style>
+  /* Ensure the popup appears above everything */
+  #logout-popup {
+    z-index: 9999;
+  }
+</style>
