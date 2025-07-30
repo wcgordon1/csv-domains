@@ -1,143 +1,131 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Text from "@/components/fundations/elements/Text.astro";
-import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
 ---
 
 <BaseLayout title="Dashboard">
-  <div class="min-h-screen bg-base-50">
-    <!-- Loading state -->
-    <div id="loading" class="flex items-center justify-center min-h-screen">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto"></div>
-        <p class="mt-4 text-base-600">Loading...</p>
-      </div>
+  <!-- Loading state -->
+  <div id="loading" class="flex items-center justify-center min-h-screen pt-24">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto"></div>
+      <p class="mt-4 text-base-600">Loading...</p>
     </div>
+  </div>
 
-    <!-- Dashboard content (hidden initially) -->
-    <div id="dashboard-content" class="hidden">
-      <div class="bg-white shadow-sm border-b border-base-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center py-6">
-            <div>
-              <Text tag="h1" variant="displayMD" class="font-semibold text-base-800">
-                Dashboard
-              </Text>
-              <Text tag="p" variant="textBase" class="mt-1 text-base-600">
-                Welcome back! Here's your account overview.
-              </Text>
-            </div>
-            <div class="flex items-center gap-4">
-              <span id="user-email" class="text-sm text-base-600"></span>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                id="signout-button"
-                class="text-red-600 border-red-200 hover:bg-red-50"
-              >
-                Sign out
-              </Button>
-            </div>
+  <!-- Dashboard content (hidden initially) -->
+  <div id="dashboard-content" class="hidden">
+    <Wrapper variant="standard" class="pt-24 pb-12">
+      <div class="bg-white border-b border-base-200 -mx-4 px-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center py-6">
+          <div>
+            <Text tag="h1" variant="displayMD" class="font-semibold text-base-800">
+              Dashboard
+            </Text>
+            <Text tag="p" variant="textBase" class="mt-1 text-base-600">
+              Welcome back! Here's your account overview.
+            </Text>
+          </div>
+          <div class="flex items-center gap-4 mt-4 sm:mt-0">
+            <span id="user-email" class="text-sm text-base-600"></span>
           </div>
         </div>
       </div>
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Stats cards -->
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-base-200">
-            <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
-              Account Status
-            </Text>
-            <Text tag="p" variant="textSM" class="mt-2 text-base-600">
-              Your account is active and ready to use.
-            </Text>
-            <div class="mt-4">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Active
-              </span>
-            </div>
-          </div>
-
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-base-200">
-            <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
-              Last Login
-            </Text>
-            <Text tag="p" variant="textSM" class="mt-2 text-base-600" id="last-login">
-              Just now
-            </Text>
-          </div>
-
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-base-200">
-            <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
-              Security
-            </Text>
-            <Text tag="p" variant="textSM" class="mt-2 text-base-600">
-              Passwordless authentication enabled
-            </Text>
-            <div class="mt-4">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                Secure
-              </span>
-            </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Stats cards -->
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-base-200">
+          <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
+            Account Status
+          </Text>
+          <Text tag="p" variant="textSM" class="mt-2 text-base-600">
+            Your account is active and ready to use.
+          </Text>
+          <div class="mt-4">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              Active
+            </span>
           </div>
         </div>
 
-        <!-- Content area -->
-        <div class="mt-8">
-          <div class="bg-white rounded-lg shadow-sm border border-base-200">
-            <div class="px-6 py-4 border-b border-base-200">
-              <Text tag="h2" variant="textXL" class="font-semibold text-base-800">
-                Getting Started
-              </Text>
-            </div>
-            <div class="p-6">
-              <Text tag="p" variant="textBase" class="text-base-600 mb-6">
-                Welcome to your dashboard! This is a protected area that can only be accessed after authentication.
-              </Text>
-              
-              <div class="space-y-4">
-                <div class="flex items-start">
-                  <div class="flex-shrink-0">
-                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-teal-100">
-                      <svg class="h-4 w-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="ml-4">
-                    <Text tag="h4" variant="textBase" class="font-medium text-base-800">
-                      Authentication Complete
-                    </Text>
-                    <Text tag="p" variant="textSM" class="mt-1 text-base-600">
-                      You've successfully signed in using passwordless authentication.
-                    </Text>
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-base-200">
+          <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
+            Last Login
+          </Text>
+          <Text tag="p" variant="textSM" class="mt-2 text-base-600" id="last-login">
+            Just now
+          </Text>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-base-200">
+          <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
+            Security
+          </Text>
+          <Text tag="p" variant="textSM" class="mt-2 text-base-600">
+            Passwordless authentication enabled
+          </Text>
+          <div class="mt-4">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              Secure
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content area -->
+      <div class="mt-8">
+        <div class="bg-white rounded-lg shadow-sm border border-base-200">
+          <div class="px-6 py-4 border-b border-base-200">
+            <Text tag="h2" variant="textXL" class="font-semibold text-base-800">
+              Getting Started
+            </Text>
+          </div>
+          <div class="p-6">
+            <Text tag="p" variant="textBase" class="text-base-600 mb-6">
+              Welcome to your dashboard! This is a protected area that can only be accessed after authentication.
+            </Text>
+            
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-teal-100">
+                    <svg class="h-4 w-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
                 </div>
+                <div class="ml-4">
+                  <Text tag="h4" variant="textBase" class="font-medium text-base-800">
+                    Authentication Complete
+                  </Text>
+                  <Text tag="p" variant="textSM" class="mt-1 text-base-600">
+                    You've successfully signed in using passwordless authentication.
+                  </Text>
+                </div>
+              </div>
 
-                <div class="flex items-start">
-                  <div class="flex-shrink-0">
-                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
-                      <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
+                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </div>
-                  <div class="ml-4">
-                    <Text tag="h4" variant="textBase" class="font-medium text-base-800">
-                      Secure Session
-                    </Text>
-                    <Text tag="p" variant="textSM" class="mt-1 text-base-600">
-                      Your session is protected and will automatically refresh.
-                    </Text>
-                  </div>
+                </div>
+                <div class="ml-4">
+                  <Text tag="h4" variant="textBase" class="font-medium text-base-800">
+                    Secure Session
+                  </Text>
+                  <Text tag="p" variant="textSM" class="mt-1 text-base-600">
+                    Your session is protected and will automatically refresh.
+                  </Text>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Wrapper>
   </div>
 
   <script>
@@ -147,7 +135,6 @@ import Button from "@/components/fundations/elements/Button.astro";
       const loading = document.getElementById('loading');
       const dashboardContent = document.getElementById('dashboard-content');
       const userEmail = document.getElementById('user-email');
-      const signoutButton = document.getElementById('signout-button');
       const lastLogin = document.getElementById('last-login');
 
       try {
@@ -173,19 +160,6 @@ import Button from "@/components/fundations/elements/Button.astro";
         // Hide loading, show content
         loading?.classList.add('hidden');
         dashboardContent?.classList.remove('hidden');
-
-        // Set up sign out handler
-        signoutButton?.addEventListener('click', async (e) => {
-          e.preventDefault();
-          
-          try {
-            await auth.signOut();
-          } catch (error) {
-            console.error('Sign out error:', error);
-            // Force redirect even if sign out fails
-            window.location.href = '/';
-          }
-        });
 
       } catch (error) {
         console.error('Dashboard error:', error);
