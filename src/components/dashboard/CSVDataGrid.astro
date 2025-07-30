@@ -64,7 +64,7 @@ import Text from "@/components/fundations/elements/Text.astro";
         <Text tag="h3" variant="textLG" class="font-semibold text-base-800" id="modal-title">
           Edit Row
         </Text>
-        <button id="close-modal-btn" class="text-base-400 hover:text-base-600">
+        <button id="close-modal-btn" class="text-base-400 hover:text-base-600 cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -78,10 +78,10 @@ import Text from "@/components/fundations/elements/Text.astro";
         </div>
         
         <div class="flex justify-end space-x-3 pt-4 border-t border-base-200">
-          <button type="button" id="cancel-edit-btn" class="px-4 py-2 text-sm text-base-600 border border-base-300 rounded-md hover:bg-base-50">
+          <button type="button" id="cancel-edit-btn" class="px-4 py-2 text-sm text-base-600 border border-base-300 rounded-md hover:bg-base-50 cursor-pointer">
             Cancel
           </button>
-          <button type="submit" class="px-4 py-2 text-sm text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700">
+          <button type="submit" class="px-4 py-2 text-sm text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700 cursor-pointer">
             <span id="save-btn-text">Save Changes</span>
           </button>
         </div>
@@ -356,7 +356,7 @@ import Text from "@/components/fundations/elements/Text.astro";
       fieldsContainer.appendChild(notice);
       
       // Fields to exclude from editing
-      const excludedFields = ['TLD', 'Date Added (UTC)', 'Fast Transfer', 'Listing Status', 'Views'];
+      const excludedFields = ['TLD', 'Date Added (UTC)', 'Fast Transfer', 'Listing Status', 'Views', 'Leads', 'Lead Count', 'Total Leads', 'Monthly Leads'];
       const editableHeaders = csvData.headers.filter(header => !excludedFields.includes(header));
       
       editableHeaders.forEach((header, headerIndex) => {
@@ -410,7 +410,7 @@ import Text from "@/components/fundations/elements/Text.astro";
       fieldsContainer.innerHTML = '';
       
       // Fields to exclude from editing
-      const excludedFields = ['TLD', 'Date Added (UTC)', 'Fast Transfer', 'Listing Status', 'Views'];
+      const excludedFields = ['TLD', 'Date Added (UTC)', 'Fast Transfer', 'Listing Status', 'Views', 'Leads', 'Lead Count', 'Total Leads', 'Monthly Leads'];
       const editableHeaders = csvData.headers.filter(header => !excludedFields.includes(header));
       
       editableHeaders.forEach((header, headerIndex) => {
