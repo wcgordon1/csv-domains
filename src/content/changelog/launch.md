@@ -1,7 +1,7 @@
 ---
-pubDate: 2025-03-03
-page: Introducing the Decentralized Dashboard
-description: "Experience the future of decentralized dashboards—offering intuitive navigation, enhanced security, and seamless access to on-chain data. Discover how our latest update empowers users with full control over their digital assets and workflows."
+pubDate: 2025-07-30
+page: V1 Completed. We are Live!
+description: "Initial launch of CSV.domains. Hope you like it. Let me know what I can improve."
 image:
   url: "/changelog/1.jpg"
   alt: "your alt text"

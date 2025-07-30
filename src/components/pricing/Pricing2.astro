@@ -12,79 +12,105 @@ import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
 const pricingData = [
   {
     color: "bg-teal-500",
-    category: "ACH Processing",
+    category: "Bulk Upload & Updates",
     icon: "ApiApp",
     buttonVariant: "default",
     details: [
       {
-        label: "Same-day ACH transfers",
-        price: "$1.50",
-        unit: "/ transaction",
+        label: "Upload your full portfolio in seconds",
+        price: "✔",
+        unit: "Afternic, Spaceship, SEDO"
       },
       {
-        label: "Next-day ACH transfers",
-        price: "$0.40",
-        unit: "/ transaction",
-      },
-      { label: "ACH return processing", price: "$4.00", unit: "/ transaction" },
-      {
-        label: "Unauthorized return handling",
-        price: "$12.00",
-        unit: "/ transaction",
+        label: "Bulk update prices by percentage or value",
+        price: "✔",
+        unit: "Increase, decrease, or set manually"
       },
       {
-        label: "Late return request processing",
-        price: "$20.00",
-        unit: "/ transaction",
+        label: "Apply landing page types in bulk",
+        price: "✔",
+        unit: "BIN, Make Offer, or Request Price"
       },
-    ],
+      {
+        label: "Adjust individual domains when needed",
+        price: "✔",
+        unit: "Full control"
+      },
+      {
+        label: "Instant preview before uploading",
+        price: "✔",
+        unit: "See before you export"
+      }
+    ]
   },
   {
     color: "bg-yellow-500",
-    category: "Wire Processing",
+    category: "CSV Tools",
     icon: "Tool",
     buttonVariant: "muted",
     details: [
       {
-        label: "Wire transfer initiation",
-        price: "$12.00",
-        unit: "/ transaction",
+        label: "Generate platform-specific exports",
+        price: "✔",
+        unit: "Afternic, Spaceship, SEDO"
       },
       {
-        label: "Wire drawdown request",
-        price: "$12.00",
-        unit: "/ transaction",
+        label: "Clean CSV formatting automatically",
+        price: "✔",
+        unit: "Avoid rejection errors"
       },
       {
-        label: "International wire transfers",
-        price: "$15.00",
-        unit: "/ transaction",
+        label: "Download full or partial portfolio",
+        price: "✔",
+        unit: "Filter and export"
       },
       {
-        label: "Wire transfer tracking",
-        price: "$5.00",
-        unit: "/ transaction",
+        label: "No database — fully browser-based",
+        price: "✔",
+        unit: "Secure & private"
       },
-      { label: "Wire recall processing", price: "$25.00", unit: "/ request" },
-    ],
+      {
+        label: "Save hours with batch workflows",
+        price: "✔",
+        unit: "Time-saving"
+      }
+    ]
   },
   {
     color: "bg-blue-500",
-    category: "Check Issuing",
+    category: "Investor-First Features",
     icon: "User",
     buttonVariant: "accent",
     details: [
       {
-        label: "Check printing & mailing (Sbianco fulfilled)",
-        price: "$2.50",
-        unit: "/ check",
+        label: "Error detection before export",
+        price: "✔",
+        unit: "Prevent bad uploads"
       },
-      { label: "Bulk check issuing", price: "$2.00", unit: "/ check" },
-      { label: "Certified check processing", price: "$10.00", unit: "/ check" },
-      { label: "Stop payment request", price: "$20.00", unit: "/ check" },
-    ],
-  },
+      {
+        label: "Quick portfolio editing dashboard",
+        price: "✔",
+        unit: "Search, filter, and edit"
+      },
+      {
+        label: "Afternic Fast Transfer support",
+        price: "✔",
+        unit: "Test & push easily"
+      },
+      {
+        label: "Track domains listed or unlisted",
+        price: "✔",
+        unit: "Stay organized"
+      },
+      {
+        label: "Zero cost",
+        price: "✔",
+        unit: "Just free baby"
+      }
+    ]
+  }
 ];
+
 ---
 
 <section>
@@ -99,7 +125,7 @@ const pricingData = [
           class="flex items-center font-medium uppercase text-base-600 gap-2"
         >
           <CreditCard size="sm" class="text-teal-600" />
-          Pricing
+          So much value
         </Text>
         <Text
           tag="h1"
@@ -108,7 +134,7 @@ const pricingData = [
           data-aos-duration="1000"
           class="mt-8 font-semibold tracking-tight text-base-800 md:text-balance"
         >
-          Fees
+          Features
         </Text>
         <Text
           tag="p"
@@ -117,20 +143,22 @@ const pricingData = [
           data-aos-duration="1500"
           class="mt-2 text-base text-base-500 lg:text-balance max-w-lg"
         >
-          For fintech platforms handling customer transactions or businesses
-          with substantial balances, we provide tailored pricing. Reach out to
-          us for more information.
+        CSV.domains gives you everything you need to list your domain portfolio 
+        with speed and precision. Upload your domains in bulk, adjust pricing and 
+        lander settings, and export clean CSVs ready for Afternic, Spaceship, or SEDO. 
         </Text>
       </div>
+      <!-- Edit domains individually, catch formatting issues before they happen, and maintain 
+        a clean, organized portfolio without touching a database. Every feature is designed to save you time, reduce friction, and help you list smarter.  -->
       <div class="flex lg:ml-auto">
         <Link
           size="base"
           variant="default"
-          href="/forms/contact"
+          href="/auth/sign-up"
           gap="xs"
           class="group w-auto"
         >
-          Contact sales
+          Sign up
           <ChevronRight
             size="sm"
             class="duration-300 easy-out-in group-hover:translate-x-2"
