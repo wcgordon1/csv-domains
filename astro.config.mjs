@@ -2,9 +2,12 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
+import vercel from '@astrojs/vercel';
+
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
   },
@@ -20,6 +23,6 @@ export default defineConfig({
     drafts: true
   },
   devToolbar: { enabled: false },
-  site: 'https://csv.domains', // Update this with your Cloudflare Pages URL
+  site: 'https://csv.domains', // Your custom domain
   integrations: [ sitemap(), mdx()]
 });
