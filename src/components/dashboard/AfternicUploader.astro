@@ -1,0 +1,346 @@
+---
+import Button from "@/components/fundations/elements/Button.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import CSVDataGrid from "./CSVDataGrid.astro";
+---
+
+<div class="bg-white rounded-lg shadow-sm border border-base-200 p-6">
+  <div class="mb-6">
+    <Text tag="h2" variant="textXL" class="font-semibold text-base-800 mb-2">
+      Afternic Domain CSV Manager
+    </Text>
+    <Text tag="p" variant="textSM" class="text-base-600">
+      Upload your CSV file to manage domain listings. Max file size: 5MB.
+    </Text>
+  </div>
+
+  <!-- Upload Section -->
+  <div id="upload-section" class="space-y-4">
+    <div class="border-2 border-dashed border-base-300 rounded-lg p-6 text-center">
+      <div class="space-y-4">
+        <div class="mx-auto w-12 h-12 bg-base-100 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-base-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div>
+          <Text tag="p" variant="textBase" class="text-base-600 mb-2">
+            Drop your CSV file here, or
+          </Text>
+          <input
+            type="file"
+            id="csv-file-input"
+            accept=".csv"
+            class="hidden"
+          />
+          <Button 
+            type="button" 
+            variant="accent" 
+            size="base"
+            class="cursor-pointer"
+            onclick="document.getElementById('csv-file-input').click()"
+          >
+            Browse Files
+          </Button>
+        </div>
+        <Text tag="p" variant="textXS" class="text-base-500">
+          CSV files only, up to 5MB
+        </Text>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="upload-progress" class="hidden">
+      <div class="bg-base-200 rounded-full h-2">
+        <div id="progress-bar" class="bg-teal-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <Text tag="p" variant="textSM" class="text-base-600 mt-2 text-center">
+        Processing file...
+      </Text>
+    </div>
+
+    <!-- Error Display -->
+    <div id="upload-error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <Text tag="p" variant="textSM" class="text-red-800" id="error-message">
+            Error message will appear here
+          </Text>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Grid Section -->
+  <div id="data-section" class="hidden mt-8">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <Text tag="h3" variant="textLG" class="font-semibold text-base-800">
+          CSV Data
+        </Text>
+        <Text tag="p" variant="textSM" class="text-base-600" id="row-count">
+          0 Domains
+        </Text>
+      </div>
+      <div class="flex gap-2">
+        <Button 
+          type="button" 
+          variant="muted" 
+          size="sm"
+          id="download-btn"
+        >
+          Download CSV
+        </Button>
+        <Button 
+          type="button" 
+          variant="default" 
+          size="sm"
+          id="reset-btn"
+        >
+          Upload New File
+        </Button>
+      </div>
+    </div>
+    
+    <CSVDataGrid />
+  </div>
+</div>
+
+<script>
+  import * as Papa from 'papaparse';
+  import { validateCSVFile, validateDomainRow, normalizeCSVData, convertToCSV, CSV_HEADERS, type AfternicDomain } from '../../lib/csvProcessor';
+
+  let csvData: AfternicDomain[] = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('csv-file-input') as HTMLInputElement;
+    const uploadSection = document.getElementById('upload-section');
+    const dataSection = document.getElementById('data-section');
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressBar = document.getElementById('progress-bar');
+    const uploadError = document.getElementById('upload-error');
+    const errorMessage = document.getElementById('error-message');
+    const rowCount = document.getElementById('row-count');
+    const downloadBtn = document.getElementById('download-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    // File upload handler
+    fileInput?.addEventListener('change', handleFileUpload);
+
+    // Drag and drop handlers
+    const dropZone = uploadSection?.querySelector('.border-dashed');
+    
+    dropZone?.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-teal-400', 'bg-teal-50');
+    });
+
+    dropZone?.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-teal-400', 'bg-teal-50');
+    });
+
+    dropZone?.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-teal-400', 'bg-teal-50');
+      const dragEvent = e as DragEvent;
+      const files = dragEvent.dataTransfer?.files;
+      if (files && files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+
+    // Download handler
+    downloadBtn?.addEventListener('click', downloadCSV);
+
+    // Reset handler
+    resetBtn?.addEventListener('click', resetUploader);
+
+    // Listen for data updates from the grid
+    window.addEventListener('csv-data-updated', (event: any) => {
+      csvData = event.detail.data;
+      updateRowCount(csvData.length);
+    });
+
+    async function handleFileUpload(event: Event) {
+      const target = event.target as HTMLInputElement;
+      const file = target.files?.[0];
+      if (file) {
+        await handleFile(file);
+      }
+    }
+
+    async function handleFile(file: File) {
+      // Hide previous errors
+      hideError();
+
+      // Validate file
+      const validation = validateCSVFile(file);
+      if (!validation.isValid) {
+        showError(validation.error || 'Invalid file');
+        return;
+      }
+
+      // Show progress
+      showProgress();
+
+      try {
+        // Parse CSV
+        Papa.parse(file, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: (header: string) => {
+            // Normalize header names to match our expected format
+            const headerMap: { [key: string]: string } = {
+              'Domain': 'domain',
+              'Buy Now Price': 'buyNowPrice',
+              'Floor Price': 'floorPrice',
+              'Min Offer': 'minOffer',
+              'Lease to Own': 'leaseToOwn',
+              'Max Lease Period': 'maxLeasePeriod',
+              'Sale Lander': 'saleLander',
+              'Show Buy Now Option': 'showBuyNowOption',
+              'Show Lease to Own Option': 'showLeaseToOwnOption',
+              'Show Make Offer Option': 'showMakeOfferOption',
+              'Hidden': 'hidden'
+            };
+            return headerMap[header] || header.toLowerCase().replace(/\s+/g, '');
+          },
+          complete: (results) => {
+            hideProgress();
+            processParsedData(results.data);
+          },
+          error: (error) => {
+            hideProgress();
+            showError(`Failed to parse CSV: ${error.message}`);
+          }
+        });
+      } catch (error) {
+        hideProgress();
+        showError(`Failed to process file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    function processParsedData(rawData: any[]) {
+      if (!rawData || rawData.length === 0) {
+        showError('No data found in CSV file');
+        return;
+      }
+
+      // Validate and normalize data
+      const errors: string[] = [];
+      const validatedData: any[] = [];
+
+      rawData.forEach((row, index) => {
+        const validation = validateDomainRow(row, index);
+        if (validation.isValid) {
+          validatedData.push(row);
+        } else {
+          errors.push(...validation.errors);
+        }
+      });
+
+      if (errors.length > 0) {
+        showError(`Data validation errors:\n${errors.slice(0, 5).join('\n')}${errors.length > 5 ? `\n... and ${errors.length - 5} more errors` : ''}`);
+        return;
+      }
+
+      // Normalize and store data
+      csvData = normalizeCSVData(validatedData);
+      
+      // Update UI
+      updateRowCount(csvData.length);
+      showDataSection();
+
+      // Initialize data grid
+      initializeDataGrid(csvData);
+    }
+
+    function showProgress() {
+      uploadProgress?.classList.remove('hidden');
+      // Simulate progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        if (progressBar) {
+          progressBar.style.width = `${progress}%`;
+        }
+        if (progress >= 90) {
+          clearInterval(interval);
+        }
+      }, 100);
+    }
+
+    function hideProgress() {
+      uploadProgress?.classList.add('hidden');
+      if (progressBar) {
+        progressBar.style.width = '0%';
+      }
+    }
+
+    function showError(message: string) {
+      if (errorMessage) {
+        errorMessage.textContent = message;
+      }
+      uploadError?.classList.remove('hidden');
+    }
+
+    function hideError() {
+      uploadError?.classList.add('hidden');
+    }
+
+    function updateRowCount(count: number) {
+      if (rowCount) {
+        rowCount.textContent = `${count} rows loaded`;
+      }
+    }
+
+    function showDataSection() {
+      dataSection?.classList.remove('hidden');
+    }
+
+    function hideDataSection() {
+      dataSection?.classList.add('hidden');
+    }
+
+    function downloadCSV() {
+      if (csvData.length === 0) return;
+
+      const csvContent = convertToCSV(csvData);
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `afternic_domains_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+
+    function resetUploader() {
+      csvData = [];
+      if (fileInput) {
+        fileInput.value = '';
+      }
+      hideError();
+      hideProgress();
+      hideDataSection();
+    }
+
+    function initializeDataGrid(data: AfternicDomain[]) {
+      // This will be handled by the CSVDataGrid component
+      window.dispatchEvent(new CustomEvent('csv-data-loaded', { 
+        detail: { data } 
+      }));
+    }
+  });
+</script>

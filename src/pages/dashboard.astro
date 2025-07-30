@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Text from "@/components/fundations/elements/Text.astro";
 import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+import AfternicUploader from "@/components/dashboard/AfternicUploader.astro";
 ---
 
 <BaseLayout title="Dashboard">
@@ -72,58 +73,9 @@ import Wrapper from "@/components/fundations/containers/Wrapper.astro";
         </div>
       </div>
 
-      <!-- Content area -->
+      <!-- Afternic Uploader -->
       <div class="mt-8">
-        <div class="bg-white rounded-lg shadow-sm border border-base-200">
-          <div class="px-6 py-4 border-b border-base-200">
-            <Text tag="h2" variant="textXL" class="font-semibold text-base-800">
-              Getting Started
-            </Text>
-          </div>
-          <div class="p-6">
-            <Text tag="p" variant="textBase" class="text-base-600 mb-6">
-              Welcome to your dashboard! This is a protected area that can only be accessed after authentication.
-            </Text>
-            
-            <div class="space-y-4">
-              <div class="flex items-start">
-                <div class="flex-shrink-0">
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-teal-100">
-                    <svg class="h-4 w-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="ml-4">
-                  <Text tag="h4" variant="textBase" class="font-medium text-base-800">
-                    Authentication Complete
-                  </Text>
-                  <Text tag="p" variant="textSM" class="mt-1 text-base-600">
-                    You've successfully signed in using passwordless authentication.
-                  </Text>
-                </div>
-              </div>
-
-              <div class="flex items-start">
-                <div class="flex-shrink-0">
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
-                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="ml-4">
-                  <Text tag="h4" variant="textBase" class="font-medium text-base-800">
-                    Secure Session
-                  </Text>
-                  <Text tag="p" variant="textSM" class="mt-1 text-base-600">
-                    Your session is protected and will automatically refresh.
-                  </Text>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AfternicUploader />
       </div>
     </Wrapper>
   </div>
