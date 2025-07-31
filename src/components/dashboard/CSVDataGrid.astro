@@ -146,6 +146,10 @@ import Text from "@/components/fundations/elements/Text.astro";
       // Clear existing rows
       gridBody.innerHTML = '';
 
+      // Filter out columns we don't want to display
+      const excludedColumns = ['TLD', 'Date Added (UTC)', 'Listing Status', 'Fast Transfer', 'Views', 'Leads'];
+      const displayHeaders = csvData.headers.filter(header => !excludedColumns.includes(header));
+
       // Render data rows
       csvData.rows.forEach((row, index) => {
         const tr = document.createElement('tr');
@@ -157,8 +161,8 @@ import Text from "@/components/fundations/elements/Text.astro";
         checkboxTd.innerHTML = `<input type="checkbox" class="row-checkbox" data-index="${index}" />`;
         tr.appendChild(checkboxTd);
         
-        // Data columns
-        csvData.headers.forEach(header => {
+        // Data columns (only display non-excluded headers)
+        displayHeaders.forEach(header => {
           const td = document.createElement('td');
           td.className = 'px-3 py-4 whitespace-nowrap text-sm text-base-900';
           const value = row[header] || '';
@@ -215,8 +219,12 @@ import Text from "@/components/fundations/elements/Text.astro";
       checkboxTh.innerHTML = '<input type="checkbox" id="master-checkbox" class="cursor-pointer" />';
       tr.appendChild(checkboxTh);
       
-      // Data headers
-      csvData.headers.forEach(header => {
+      // Filter out columns we don't want to display
+      const excludedColumns = ['TLD', 'Date Added (UTC)', 'Listing Status', 'Fast Transfer', 'Views', 'Leads'];
+      const displayHeaders = csvData.headers.filter(header => !excludedColumns.includes(header));
+      
+      // Data headers (only display non-excluded headers)
+      displayHeaders.forEach(header => {
         const th = document.createElement('th');
         th.className = 'px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px] cursor-pointer hover:bg-base-100 select-none';
         th.innerHTML = `${header}${getSortArrow(header)}`;

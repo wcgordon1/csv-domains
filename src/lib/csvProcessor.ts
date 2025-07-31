@@ -74,9 +74,13 @@ export function normalizeCSVData(rawData: any[], headers: string[]): CSVData {
 }
 
 export function convertToCSV(csvData: CSVData): string {
-  const headers = csvData.headers.join(',');
+  // Filter out columns we don't want in the download
+  const excludedColumns = ['TLD', 'Date Added (UTC)', 'Listing Status', 'Fast Transfer', 'Views', 'Leads'];
+  const displayHeaders = csvData.headers.filter(header => !excludedColumns.includes(header));
+  
+  const headers = displayHeaders.join(',');
   const rows = csvData.rows.map(row => 
-    csvData.headers.map(header => {
+    displayHeaders.map(header => {
       const value = row[header] || '';
       // Wrap in quotes if contains comma, newline, or quote
       return value.includes(',') || value.includes('\n') || value.includes('"') 
