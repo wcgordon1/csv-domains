@@ -126,6 +126,16 @@ import Text from "@/components/fundations/elements/Text.astro";
       renderGrid();
     });
 
+    // Listen for processing overlay events (price increases, etc.)
+    window.addEventListener('show-processing-overlay', (event: any) => {
+      const message = event.detail?.message || 'Processing data...';
+      showProcessingLoading(message);
+    });
+
+    window.addEventListener('hide-processing-overlay', () => {
+      hideProcessingLoading();
+    });
+
     // Bulk action handlers
     document.getElementById('bulk-delete-btn')?.addEventListener('click', deleteSelected);
     document.getElementById('bulk-edit-btn')?.addEventListener('click', editSelected);
@@ -336,8 +346,8 @@ import Text from "@/components/fundations/elements/Text.astro";
       // Don't sort Actions column
       if (column === 'Actions') return;
 
-      // Show loading spinner
-      showSortLoading();
+      // Show loading spinner with sorting message
+      showProcessingLoading('Sorting data...');
 
       // Use setTimeout to allow UI update
       setTimeout(() => {
@@ -357,7 +367,7 @@ import Text from "@/components/fundations/elements/Text.astro";
         // Sort and re-render
         applySorting();
         renderGrid();
-        hideSortLoading();
+        hideProcessingLoading();
       }, 100);
     }
 
@@ -410,19 +420,33 @@ import Text from "@/components/fundations/elements/Text.astro";
       return `<span class="ml-1 text-base-400">↕</span>`;
     }
 
-    function showSortLoading() {
+    function showProcessingLoading(message: string = 'Processing data...') {
       const sortLoading = document.getElementById('sort-loading');
       const gridHeader = document.getElementById('data-grid-header');
       
       if (sortLoading && gridHeader) {
+        // Update the loading message
+        const loadingText = sortLoading.querySelector('p');
+        if (loadingText) {
+          loadingText.textContent = message;
+        }
+        
+        // Calculate header height dynamically
         const headerHeight = gridHeader.offsetHeight;
         sortLoading.style.top = `${headerHeight}px`;
         sortLoading.classList.remove('hidden');
       }
     }
 
-    function hideSortLoading() {
-      document.getElementById('sort-loading')?.classList.add('hidden');
+    function hideProcessingLoading() {
+      const sortLoading = document.getElementById('sort-loading');
+      sortLoading?.classList.add('hidden');
+      
+      // Reset loading text back to sorting message
+      const loadingText = sortLoading?.querySelector('p');
+      if (loadingText) {
+        loadingText.textContent = 'Sorting data...';
+      }
     }
 
     function deleteSelected() {

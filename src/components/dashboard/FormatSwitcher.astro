@@ -3,7 +3,7 @@ import Button from "@/components/fundations/elements/Button.astro";
 ---
 
 <!-- Format Switcher - Buttons for switching between Afternic, Spaceship, and Sedo -->
-<div class="inline-flex gap-1 bg-base-100 p-1 rounded-lg border border-base-200" id="format-switcher">
+<div class="inline-flex gap-2" id="format-switcher">
   <button 
     id="format-btn-afternic" 
     class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-teal-600 text-white"
@@ -13,14 +13,14 @@ import Button from "@/components/fundations/elements/Button.astro";
   </button>
   <button 
     id="format-btn-spaceship" 
-    class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-200 text-base-600 hover:bg-base-300"
+    class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-50 text-base-500 hover:bg-base-100"
     data-format="spaceship"
   >
     Spaceship
   </button>
   <button 
     id="format-btn-sedo" 
-    class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-200 text-base-600 hover:bg-base-300"
+    class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-50 text-base-500 hover:bg-base-100"
     data-format="sedo"
   >
     Sedo
@@ -65,8 +65,8 @@ import Button from "@/components/fundations/elements/Button.astro";
           // Active state - green
           btnElement.className = 'format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-teal-600 text-white';
         } else {
-          // Inactive state - light gray
-          btnElement.className = 'format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-200 text-base-600 hover:bg-base-300';
+          // Inactive state - same gray as header columns
+          btnElement.className = 'format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-50 text-base-500 hover:bg-base-100';
         }
       });
     }
