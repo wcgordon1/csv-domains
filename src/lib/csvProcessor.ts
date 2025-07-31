@@ -73,14 +73,30 @@ export function normalizeCSVData(rawData: any[], headers: string[]): CSVData {
   };
 }
 
-export function convertToCSV(csvData: CSVData): string {
-  // Filter out columns we don't want in the download
-  const excludedColumns = ['TLD', 'Date Added (UTC)', 'Listing Status', 'Fast Transfer', 'Views', 'Leads'];
-  const displayHeaders = csvData.headers.filter(header => !excludedColumns.includes(header));
+export function convertToCSV(csvData: CSVData, formatName: string = 'afternic'): string {
+  // For Afternic format, filter out excluded columns
+  if (formatName === 'afternic') {
+    const excludedColumns = ['TLD', 'Date Added (UTC)', 'Listing Status', 'Fast Transfer', 'Views', 'Leads'];
+    const displayHeaders = csvData.headers.filter(header => !excludedColumns.includes(header));
+    
+    const headers = displayHeaders.join(',');
+    const rows = csvData.rows.map(row => 
+      displayHeaders.map(header => {
+        const value = row[header] || '';
+        // Wrap in quotes if contains comma, newline, or quote
+        return value.includes(',') || value.includes('\n') || value.includes('"') 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value;
+      }).join(',')
+    );
+    
+    return [headers, ...rows].join('\n');
+  }
   
-  const headers = displayHeaders.join(',');
+  // For other formats (spaceship, sedo), use the data as-is since it's already transformed
+  const headers = csvData.headers.join(',');
   const rows = csvData.rows.map(row => 
-    displayHeaders.map(header => {
+    csvData.headers.map(header => {
       const value = row[header] || '';
       // Wrap in quotes if contains comma, newline, or quote
       return value.includes(',') || value.includes('\n') || value.includes('"') 

@@ -1,0 +1,176 @@
+---
+import Text from "@/components/fundations/elements/Text.astro";
+import FormatSwitcher from "./FormatSwitcher.astro";
+import FormatActions from "./FormatActions.astro";
+import DataGrid from "./DataGrid.astro";
+---
+
+<!-- Data Grid Container - Main orchestrator for format switching and data display -->
+<div id="data-section" class="hidden mt-8">
+  <div class="flex justify-between items-center mb-4">
+    <div>
+      <Text tag="h3" variant="textLG" class="font-semibold text-base-800" id="data-title">
+        Afternic Domains
+      </Text>
+      <Text tag="p" variant="textSM" class="text-base-600" id="row-count">
+        0 Domains
+      </Text>
+    </div>
+    <div class="flex gap-2 items-center">
+      <FormatSwitcher />
+      <FormatActions />
+    </div>
+  </div>
+
+  <!-- Loading state for format transformation -->
+  <div id="format-loading" class="hidden bg-white border border-base-200 rounded-lg p-8 text-center">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-4"></div>
+    <Text tag="p" variant="textSM" class="text-base-600">
+      Transforming data...
+    </Text>
+  </div>
+  
+  <!-- Data Grid -->
+  <DataGrid />
+</div>
+
+<script>
+  import { transformData, reverseTransformRow, getFormatDisplayInfo } from '../../lib/dataTransformer.js';
+  import { getFormat } from '../../lib/formatConfigs.js';
+  import type { CSVData } from '../../lib/csvProcessor';
+
+  // Global state
+  let sourceData: CSVData = { headers: [], rows: [] }; // Original Afternic data
+  let currentFormat = 'afternic';
+  let displayData: CSVData = { headers: [], rows: [] }; // Transformed data for current format
+  let selectedRows = new Set<number>();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const dataSection = document.getElementById('data-section');
+    const dataTitle = document.getElementById('data-title');
+    const rowCount = document.getElementById('row-count');
+    const formatLoading = document.getElementById('format-loading');
+
+    // Listen for CSV data loaded from uploader
+    window.addEventListener('csv-data-loaded', (event: any) => {
+      sourceData = event.detail.data;
+      currentFormat = 'afternic'; // Always start with Afternic
+      displayData = transformData(sourceData, currentFormat);
+      
+      updateUI();
+      showDataSection();
+      
+      // Initialize data grid with transformed data
+      window.dispatchEvent(new CustomEvent('display-data-ready', { 
+        detail: { 
+          data: displayData, 
+          format: currentFormat,
+          sourceData: sourceData
+        } 
+      }));
+    });
+
+    // Listen for format switch requests
+    window.addEventListener('format-switch-requested', async (event: any) => {
+      const newFormat = event.detail.format;
+      if (newFormat === currentFormat) return;
+
+      await switchFormat(newFormat);
+    });
+
+    // Listen for data updates from grid (edits, deletes)
+    window.addEventListener('csv-data-updated', (event: any) => {
+      const updatedDisplayData = event.detail.data;
+      const updatedFormat = event.detail.format || currentFormat;
+      
+      // If updated data is not in source format, need to reverse transform
+      if (updatedFormat !== 'afternic') {
+        // Update source data by reverse transforming the changes
+        // This is complex and will be implemented in later steps
+        console.log('TODO: Reverse transform updated data back to source');
+      } else {
+        sourceData = updatedDisplayData;
+      }
+      
+      displayData = updatedDisplayData;
+      updateUI();
+    });
+
+    async function switchFormat(newFormat: string) {
+      if (!sourceData.rows.length) return;
+
+      // Show loading state
+      showFormatLoading();
+      
+      // Small delay to show loading state
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      try {
+        // Transform data to new format
+        displayData = transformData(sourceData, newFormat);
+        currentFormat = newFormat;
+        
+        // Update UI
+        updateUI();
+        
+        // Notify other components
+        window.dispatchEvent(new CustomEvent('display-data-ready', { 
+          detail: { 
+            data: displayData, 
+            format: currentFormat,
+            sourceData: sourceData
+          } 
+        }));
+        
+        // Update format switcher state
+        window.dispatchEvent(new CustomEvent('format-switched', { 
+          detail: { format: currentFormat } 
+        }));
+        
+      } catch (error) {
+        console.error('Error switching format:', error);
+        // TODO: Show error message to user
+      } finally {
+        hideFormatLoading();
+      }
+    }
+
+    function updateUI() {
+      if (dataTitle) {
+        const formatInfo = getFormatDisplayInfo(currentFormat);
+        dataTitle.textContent = `${formatInfo.displayName} Domains`;
+      }
+      
+      if (rowCount) {
+        const count = displayData.rows.length;
+        rowCount.textContent = `${count} domain${count !== 1 ? 's' : ''} found`;
+      }
+    }
+
+    function showDataSection() {
+      dataSection?.classList.remove('hidden');
+    }
+
+    function showFormatLoading() {
+      formatLoading?.classList.remove('hidden');
+      document.getElementById('data-grid-container')?.classList.add('hidden');
+    }
+
+    function hideFormatLoading() {
+      formatLoading?.classList.add('hidden');
+      document.getElementById('data-grid-container')?.classList.remove('hidden');
+    }
+
+    // Expose global state for other components
+    (window as any).getAppState = () => ({
+      sourceData,
+      currentFormat,
+      displayData,
+      selectedRows
+    });
+
+    (window as any).updateSelectedRows = (newSelectedRows: Set<number>) => {
+      selectedRows = newSelectedRows;
+    };
+  });
+</script>

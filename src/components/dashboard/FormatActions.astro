@@ -1,0 +1,90 @@
+---
+import Button from "@/components/fundations/elements/Button.astro";
+---
+
+<!-- Format Actions - Download button that changes based on current format -->
+<div class="flex gap-2">
+  <Button 
+    type="button" 
+    variant="muted" 
+    size="sm"
+    id="download-btn"
+    class="cursor-pointer"
+  >
+    <span id="download-btn-text">Download Afternic</span>
+  </Button>
+</div>
+
+<script>
+  import { convertToCSV, type CSVData } from '../../lib/csvProcessor';
+  import { getFormatDisplayInfo } from '../../lib/dataTransformer.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const downloadBtn = document.getElementById('download-btn');
+    const downloadBtnText = document.getElementById('download-btn-text');
+    
+    let currentFormat = 'afternic';
+    let displayData: CSVData = { headers: [], rows: [] };
+
+    // Download handler
+    downloadBtn?.addEventListener('click', downloadCSV);
+
+    // Listen for format switches to update button text
+    window.addEventListener('format-switched', (event: any) => {
+      currentFormat = event.detail.format;
+      updateDownloadButton();
+    });
+
+    // Listen for data updates
+    window.addEventListener('display-data-ready', (event: any) => {
+      displayData = event.detail.data;
+      currentFormat = event.detail.format;
+      updateDownloadButton();
+    });
+
+    function updateDownloadButton() {
+      if (downloadBtnText) {
+        const formatInfo = getFormatDisplayInfo(currentFormat);
+        downloadBtnText.textContent = `Download ${formatInfo.displayName}`;
+      }
+    }
+
+    function downloadCSV() {
+      if (!displayData.rows || displayData.rows.length === 0) {
+        console.warn('No data to download');
+        return;
+      }
+
+      try {
+        const formatInfo = getFormatDisplayInfo(currentFormat);
+        const csvContent = convertToCSV(displayData, currentFormat);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          
+          // Generate filename with current date
+          const currentDate = new Date().toISOString().split('T')[0];
+          const filename = `${formatInfo.filename}_${currentDate}.csv`;
+          link.setAttribute('download', filename);
+          
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          // Clean up the blob URL
+          URL.revokeObjectURL(url);
+        }
+      } catch (error) {
+        console.error('Error downloading CSV:', error);
+        // TODO: Show error message to user
+      }
+    }
+
+    // Initialize button text
+    updateDownloadButton();
+  });
+</script>

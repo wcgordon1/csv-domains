@@ -1,0 +1,77 @@
+---
+import Button from "@/components/fundations/elements/Button.astro";
+---
+
+<!-- Format Switcher - Buttons for switching between Afternic, Spaceship, and Sedo -->
+<div class="flex gap-1 bg-base-100 p-1 rounded-lg border border-base-200" id="format-switcher">
+  <button 
+    id="format-btn-afternic" 
+    class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-teal-600 text-white"
+    data-format="afternic"
+  >
+    Afternic
+  </button>
+  <button 
+    id="format-btn-spaceship" 
+    class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-200 text-base-600 hover:bg-base-300"
+    data-format="spaceship"
+  >
+    Spaceship
+  </button>
+  <button 
+    id="format-btn-sedo" 
+    class="format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-200 text-base-600 hover:bg-base-300"
+    data-format="sedo"
+  >
+    Sedo
+  </button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const formatBtns = document.querySelectorAll('.format-btn');
+    let currentFormat = 'afternic';
+
+    // Add click handlers to format buttons
+    formatBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const format = target.dataset.format;
+        if (format && format !== currentFormat) {
+          switchToFormat(format);
+        }
+      });
+    });
+
+    // Listen for format switched events to update button states
+    window.addEventListener('format-switched', (event: any) => {
+      currentFormat = event.detail.format;
+      updateButtonStates();
+    });
+
+    function switchToFormat(format: string) {
+      // Request format switch from container
+      window.dispatchEvent(new CustomEvent('format-switch-requested', { 
+        detail: { format } 
+      }));
+    }
+
+    function updateButtonStates() {
+      formatBtns.forEach(btn => {
+        const btnElement = btn as HTMLElement;
+        const btnFormat = btnElement.dataset.format;
+        
+        if (btnFormat === currentFormat) {
+          // Active state - green
+          btnElement.className = 'format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-teal-600 text-white';
+        } else {
+          // Inactive state - light gray
+          btnElement.className = 'format-btn px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer bg-base-200 text-base-600 hover:bg-base-300';
+        }
+      });
+    }
+
+    // Initialize button states
+    updateButtonStates();
+  });
+</script>
