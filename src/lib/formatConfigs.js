@@ -77,8 +77,8 @@ export const FORMATS = {
       },
       { key: 'price', displayName: 'Price', sourceColumn: 'Buy Now Price', type: 'number' },
       { key: 'minimumPrice', displayName: 'Minimum Price', sourceColumn: 'Min Offer', type: 'number' },
-      { key: 'currency', displayName: 'Currency', sourceColumn: null, type: 'text', alwaysEmpty: true },
-      { key: 'actionType', displayName: 'Action Type', sourceColumn: null, type: 'text', alwaysEmpty: true }
+      { key: 'currency', displayName: 'Currency', sourceColumn: null, type: 'text' },
+      { key: 'actionType', displayName: 'Action Type', sourceColumn: null, type: 'text' }
     ]
   }
 };

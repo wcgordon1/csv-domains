@@ -457,13 +457,209 @@ import Text from "@/components/fundations/elements/Text.astro";
     }
 
     function openEditModal(index: number) {
-      // TODO: Implement edit modal with format-specific fields
-      console.log('TODO: Open edit modal for row', index, 'in format', currentFormat);
+      const row = displayData.rows[index];
+      if (!row) return;
+
+      const modalTitle = document.getElementById('modal-title');
+      const saveBtnText = document.getElementById('save-btn-text');
+      const editMode = document.getElementById('edit-mode') as HTMLInputElement;
+      const format = getFormat(currentFormat);
+      
+      if (modalTitle) modalTitle.textContent = `${format.displayName} Edit: 1 row`;
+      if (saveBtnText) saveBtnText.textContent = 'Save Changes';
+      if (editMode) editMode.value = 'single';
+
+      // Populate form
+      (document.getElementById('edit-row-index') as HTMLInputElement).value = index.toString();
+      
+      // Generate dynamic form fields based on current format
+      generateEditForm(false, row);
+
+      editModal?.classList.remove('hidden');
     }
 
     function openBulkEditModal() {
-      // TODO: Implement bulk edit modal
-      console.log('TODO: Open bulk edit modal for', selectedRows.size, 'rows in format', currentFormat);
+      const modalTitle = document.getElementById('modal-title');
+      const saveBtnText = document.getElementById('save-btn-text');
+      const editMode = document.getElementById('edit-mode') as HTMLInputElement;
+      const format = getFormat(currentFormat);
+      
+      if (modalTitle) modalTitle.textContent = `${format.displayName} Edit: ${selectedRows.size} rows`;
+      if (saveBtnText) saveBtnText.textContent = 'Update All Selected';
+      if (editMode) editMode.value = 'bulk';
+      
+      // Generate form fields with empty values for bulk editing
+      generateEditForm(true);
+
+      editModal?.classList.remove('hidden');
+    }
+
+    function generateEditForm(isBulkEdit: boolean, row?: any) {
+      const fieldsContainer = document.getElementById('edit-fields-container');
+      if (!fieldsContainer) return;
+      
+      fieldsContainer.innerHTML = '';
+      
+      // Get current format configuration
+      const format = getFormat(currentFormat);
+      
+      // Add notice for bulk editing
+      if (isBulkEdit) {
+        const notice = document.createElement('div');
+        notice.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4';
+        notice.innerHTML = `
+          <div class="flex">
+            <svg class="h-5 w-5 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="ml-3">
+              <p class="text-sm text-blue-800">
+                <strong>Bulk Edit Mode:</strong> Only fill in the fields you want to update. Empty fields will remain unchanged for all selected rows.
+              </p>
+            </div>
+          </div>
+        `;
+        fieldsContainer.appendChild(notice);
+      }
+      
+      // Create form fields based on format configuration
+      const editableColumns = format.columns; // Include all columns now that Currency/ActionType are editable
+      
+      // Process columns in pairs for two-column layout
+      for (let i = 0; i < editableColumns.length; i += 2) {
+        const column1 = editableColumns[i];
+        const column2 = editableColumns[i + 1];
+        
+        if (column2) {
+          // Create a row with two columns
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'grid grid-cols-2 gap-4';
+          
+          const firstFieldDiv = createFieldElement(column1, isBulkEdit, row);
+          const secondFieldDiv = createFieldElement(column2, isBulkEdit, row);
+          
+          rowDiv.appendChild(firstFieldDiv);
+          rowDiv.appendChild(secondFieldDiv);
+          fieldsContainer.appendChild(rowDiv);
+        } else {
+          // Single column for the last field if odd number of fields
+          const singleFieldDiv = createFieldElement(column1, isBulkEdit, row);
+          fieldsContainer.appendChild(singleFieldDiv);
+        }
+      }
+    }
+
+    function createFieldElement(column: any, isBulkEdit: boolean, row?: any) {
+      const fieldDiv = document.createElement('div');
+      const label = document.createElement('label');
+      label.className = 'block text-sm font-medium text-base-700 mb-1';
+      label.textContent = column.displayName;
+
+      const fieldId = `edit-field-${column.key}`;
+      
+      if (column.type === 'select') {
+        // Create dropdown field
+        const select = document.createElement('select');
+        select.id = fieldId;
+        select.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+        
+        // Add blank option for bulk edit
+        if (isBulkEdit) {
+          const blankOption = document.createElement('option');
+          blankOption.value = '';
+          blankOption.textContent = 'Keep current values';
+          select.appendChild(blankOption);
+        }
+        
+        // Add options from column configuration
+        if (column.options) {
+          column.options.forEach((optionValue: string) => {
+            const option = document.createElement('option');
+            option.value = optionValue;
+            option.textContent = optionValue || '(Empty)';
+            select.appendChild(option);
+          });
+        }
+        
+        // Set current value for single edit
+        if (!isBulkEdit && row) {
+          const currentValue = row[column.displayName];
+          if (currentValue !== undefined) {
+            select.value = currentValue;
+          }
+        }
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(select);
+        
+      } else if (column.type === 'number') {
+        // Create number input field
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = fieldId;
+        input.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+        input.placeholder = isBulkEdit ? 'Leave blank to keep current values' : '';
+        
+        // Add min/max constraints if specified
+        if (column.min !== undefined) input.min = column.min.toString();
+        if (column.max !== undefined) input.max = column.max.toString();
+        
+        // Set current value for single edit
+        if (!isBulkEdit && row) {
+          const currentValue = row[column.displayName];
+          if (currentValue !== undefined && currentValue !== '') {
+            input.value = currentValue.toString();
+          }
+        }
+
+        // Add validation for Max Lease Period (if it exists in current format)
+        if (column.key === 'maxLeasePeriod') {
+          input.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            const errorDiv = document.getElementById(`error-${column.key}`);
+            
+            if (this.value && (isNaN(value) || value < 2 || value > 60)) {
+              this.className = 'w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500';
+              if (!errorDiv) {
+                const error = document.createElement('div');
+                error.id = `error-${column.key}`;
+                error.className = 'text-red-600 text-xs mt-1';
+                error.textContent = 'Needs to be a value between 2 - 60';
+                fieldDiv.appendChild(error);
+              }
+            } else {
+              this.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+              if (errorDiv) {
+                errorDiv.remove();
+              }
+            }
+          });
+        }
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(input);
+        
+      } else {
+        // Create text input field (default)
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = fieldId;
+        input.className = 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500';
+        input.placeholder = isBulkEdit ? 'Leave blank to keep current values' : '';
+        
+        // Set current value for single edit
+        if (!isBulkEdit && row) {
+          const currentValue = row[column.displayName];
+          if (currentValue !== undefined) {
+            input.value = currentValue.toString();
+          }
+        }
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(input);
+      }
+
+      return fieldDiv;
     }
 
     function closeModal() {
@@ -472,8 +668,58 @@ import Text from "@/components/fundations/elements/Text.astro";
 
     function saveEdit(event: Event) {
       event.preventDefault();
-      // TODO: Implement save edit functionality
-      console.log('TODO: Save edit functionality');
+      
+      const editMode = (document.getElementById('edit-mode') as HTMLInputElement).value;
+      const format = getFormat(currentFormat);
+      
+      if (editMode === 'bulk') {
+        // Bulk edit mode
+        const updates: { [key: string]: string } = {};
+        
+        // Collect non-empty values from form fields
+        format.columns.forEach(column => {
+          const element = document.getElementById(`edit-field-${column.key}`) as HTMLInputElement | HTMLSelectElement;
+          if (element && element.value.trim() !== '') {
+            updates[column.displayName] = element.value.trim();
+          }
+        });
+
+        // Apply updates to all selected rows
+        selectedRows.forEach(index => {
+          Object.keys(updates).forEach(displayName => {
+            displayData.rows[index][displayName] = updates[displayName];
+          });
+        });
+        
+        selectedRows.clear();
+      } else {
+        // Single edit mode
+        const index = parseInt((document.getElementById('edit-row-index') as HTMLInputElement).value);
+        
+        const updatedRow: any = {};
+        
+        // Collect values from all dynamic fields
+        format.columns.forEach(column => {
+          const element = document.getElementById(`edit-field-${column.key}`) as HTMLInputElement | HTMLSelectElement;
+          if (element) {
+            updatedRow[column.displayName] = element.value.trim();
+          } else if (!column.sourceColumn) {
+            // For fields without source column (like Currency/Action Type), default to empty if no element found
+            updatedRow[column.displayName] = '';
+          }
+        });
+
+        displayData.rows[index] = updatedRow;
+      }
+
+      renderGrid();
+      closeModal();
+
+      // Notify container of data update
+      window.dispatchEvent(new CustomEvent('csv-data-updated', { 
+        detail: { data: displayData, format: currentFormat } 
+      }));
     }
   });
+</script>
 </script>

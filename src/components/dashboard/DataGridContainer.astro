@@ -85,10 +85,20 @@ import DataGrid from "./DataGrid.astro";
       
       // If updated data is not in source format, need to reverse transform
       if (updatedFormat !== 'afternic') {
-        // Update source data by reverse transforming the changes
-        // This is complex and will be implemented in later steps
-        console.log('TODO: Reverse transform updated data back to source');
+        // For each edited row, reverse transform back to source format and update sourceData
+        updatedDisplayData.rows.forEach((displayRow: any, index: number) => {
+          if (sourceData.rows[index]) {
+            const reversedRow = reverseTransformRow(displayRow, updatedFormat, sourceData.rows[index]);
+            sourceData.rows[index] = reversedRow;
+          }
+        });
+        
+        // If rows were deleted, remove from source data too
+        if (updatedDisplayData.rows.length < sourceData.rows.length) {
+          sourceData.rows.splice(updatedDisplayData.rows.length);
+        }
       } else {
+        // Data is already in source format
         sourceData = updatedDisplayData;
       }
       

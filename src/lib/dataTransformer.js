@@ -58,14 +58,8 @@ function transformRow(sourceRow, sourceHeaders, targetFormat) {
   const transformedRow = {};
 
   targetFormat.columns.forEach(column => {
-    const { key, displayName, sourceColumn, transform, alwaysEmpty } = column;
+    const { key, displayName, sourceColumn, transform } = column;
     
-    // Handle always empty columns (like Currency, Action Type in Sedo)
-    if (alwaysEmpty) {
-      transformedRow[displayName] = '';
-      return;
-    }
-
     // Get source value
     let sourceValue = '';
     if (sourceColumn && sourceRow[sourceColumn] !== undefined) {
@@ -97,10 +91,10 @@ export function reverseTransformRow(editedRow, targetFormatName, originalSourceR
   const sourceRow = { ...originalSourceRow }; // Preserve non-mapped fields
 
   targetFormat.columns.forEach(column => {
-    const { displayName, sourceColumn, reverseTransform, alwaysEmpty } = column;
+    const { displayName, sourceColumn, reverseTransform } = column;
     
-    // Skip columns that don't map to source or are always empty
-    if (!sourceColumn || alwaysEmpty) return;
+    // Skip columns that don't map to source (like Currency, Action Type)
+    if (!sourceColumn) return;
 
     let editedValue = editedRow[displayName] || '';
     
