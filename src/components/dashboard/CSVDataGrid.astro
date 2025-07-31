@@ -32,7 +32,7 @@ import Text from "@/components/fundations/elements/Text.astro";
     </div>
 
     <!-- Scrollable table container -->
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto relative">
       <!-- Data grid table -->
       <table id="data-grid-table" class="min-w-full divide-y divide-base-200 hidden">
         <thead class="bg-base-50" id="data-grid-header">
@@ -42,6 +42,15 @@ import Text from "@/components/fundations/elements/Text.astro";
           <!-- Rows will be dynamically generated -->
         </tbody>
       </table>
+      
+      <!-- Sorting loading overlay - positioned over data rows only -->
+      <div id="sort-loading" class="hidden absolute backdrop-blur-sm bg-white/30 z-10 left-0 right-0 bottom-0">
+        <div class="flex items-center justify-center h-full min-h-[100px]">
+          <Text tag="p" variant="textSM" class="text-base-700 font-medium">
+            Sorting data...
+          </Text>
+        </div>
+      </div>
     </div>
 
     <!-- Empty state -->
@@ -92,6 +101,7 @@ import Text from "@/components/fundations/elements/Text.astro";
 
   let csvData: CSVData = { headers: [], rows: [] };
   let selectedRows = new Set<number>();
+  let currentSort: { column: string | null; direction: 'asc' | 'desc' | null } = { column: null, direction: null };
 
   document.addEventListener('DOMContentLoaded', () => {
     const gridLoading = document.getElementById('grid-loading');
@@ -106,6 +116,8 @@ import Text from "@/components/fundations/elements/Text.astro";
     // Listen for CSV data loaded event
     window.addEventListener('csv-data-loaded', (event: any) => {
       csvData = event.detail.data;
+      // Reset sort state when new data is loaded
+      currentSort = { column: null, direction: null };
       renderGrid();
     });
 
@@ -206,8 +218,9 @@ import Text from "@/components/fundations/elements/Text.astro";
       // Data headers
       csvData.headers.forEach(header => {
         const th = document.createElement('th');
-        th.className = 'px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px]';
-        th.textContent = header;
+        th.className = 'px-3 py-3 text-left text-xs font-medium text-base-500 uppercase tracking-wider min-w-[120px] cursor-pointer hover:bg-base-100 select-none';
+        th.innerHTML = `${header}${getSortArrow(header)}`;
+        th.addEventListener('click', () => sortByColumn(header));
         tr.appendChild(th);
       });
       
@@ -303,6 +316,117 @@ import Text from "@/components/fundations/elements/Text.astro";
       }
       
       updateSelectionUI();
+    }
+
+    function showSortLoading() {
+      const sortLoading = document.getElementById('sort-loading');
+      const gridHeader = document.getElementById('data-grid-header');
+      
+      if (sortLoading && gridHeader) {
+        // Calculate header height dynamically
+        const headerHeight = gridHeader.offsetHeight;
+        sortLoading.style.top = `${headerHeight}px`;
+        sortLoading.classList.remove('hidden');
+      }
+    }
+
+    function hideSortLoading() {
+      const sortLoading = document.getElementById('sort-loading');
+      sortLoading?.classList.add('hidden');
+    }
+
+    function sortByColumn(column: string) {
+      // Don't sort certain columns
+      const nonSortableColumns = ['Actions'];
+      if (nonSortableColumns.includes(column)) return;
+
+      // Show loading spinner over existing rows
+      showSortLoading();
+
+      // Use setTimeout to allow the UI to update and show spinner before sorting
+      setTimeout(() => {
+        // Toggle sort direction
+        if (currentSort.column === column) {
+          if (currentSort.direction === 'asc') {
+            currentSort.direction = 'desc';
+          } else if (currentSort.direction === 'desc') {
+            // Reset to no sort
+            currentSort.column = null;
+            currentSort.direction = null;
+          }
+        } else {
+          currentSort.column = column;
+          currentSort.direction = 'asc';
+        }
+
+        // Sort the data and re-render
+        applySorting();
+        renderGrid();
+        
+        // Hide loading spinner
+        hideSortLoading();
+      }, 100);
+    }
+
+    function applySorting() {
+      if (!currentSort.column || !currentSort.direction) {
+        // No sorting - restore original order if needed
+        return;
+      }
+
+      const column = currentSort.column;
+      const direction = currentSort.direction;
+
+      csvData.rows.sort((a, b) => {
+        const aValue = a[column] || '';
+        const bValue = b[column] || '';
+
+        // Detect if values are numeric
+        const aIsNumeric = !isNaN(parseFloat(aValue.toString().replace(/[,$]/g, ''))) && isFinite(parseFloat(aValue.toString().replace(/[,$]/g, '')));
+        const bIsNumeric = !isNaN(parseFloat(bValue.toString().replace(/[,$]/g, ''))) && isFinite(parseFloat(bValue.toString().replace(/[,$]/g, '')));
+
+        let comparison = 0;
+
+        if (aIsNumeric && bIsNumeric) {
+          // Numeric comparison
+          const aNum = parseFloat(aValue.toString().replace(/[,$]/g, ''));
+          const bNum = parseFloat(bValue.toString().replace(/[,$]/g, ''));
+          comparison = aNum - bNum;
+        } else {
+          // String comparison
+          comparison = aValue.toString().localeCompare(bValue.toString(), undefined, { 
+            numeric: true, 
+            sensitivity: 'base' 
+          });
+        }
+
+        return direction === 'asc' ? comparison : -comparison;
+      });
+
+      // Update selectedRows indices after sorting
+      updateSelectedRowsAfterSort();
+    }
+
+    function updateSelectedRowsAfterSort() {
+      // This is a simplified approach - in a more complex scenario, 
+      // you might want to track rows by a unique identifier rather than index
+      // For now, we'll clear selections to avoid confusion
+      selectedRows.clear();
+      updateSelectionUI();
+    }
+
+    function getSortArrow(column: string): string {
+      if (currentSort.column !== column) {
+        return `<span class="ml-1 text-base-400">↕</span>`;
+      }
+      
+      if (currentSort.direction === 'asc') {
+        return `<span class="ml-1 text-base-600">↑</span>`;
+      } else if (currentSort.direction === 'desc') {
+        return `<span class="ml-1 text-base-600">↓</span>`;
+      }
+      
+      return `<span class="ml-1 text-base-400">↕</span>`;
     }
 
     function deleteSelected() {
