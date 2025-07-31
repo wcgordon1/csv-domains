@@ -86,6 +86,9 @@ import Text from "@/components/fundations/elements/Text.astro";
           <button type="button" id="cancel-edit-btn" class="px-4 py-2 text-sm text-base-600 border border-base-300 rounded-md hover:bg-base-50 cursor-pointer">
             Cancel
           </button>
+          <button type="button" id="delete-edit-btn" class="px-4 py-2 text-sm text-red-600 border border-red-300 rounded-md hover:bg-red-50 cursor-pointer">
+            <span id="delete-btn-text">Delete</span>
+          </button>
           <button type="submit" class="px-4 py-2 text-sm text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700 cursor-pointer">
             <span id="save-btn-text">Save Changes</span>
           </button>
@@ -103,6 +106,8 @@ import Text from "@/components/fundations/elements/Text.astro";
   let currentFormat = 'afternic';
   let selectedRows = new Set<number>();
   let currentSort: { column: string | null; direction: 'asc' | 'desc' | null } = { column: null, direction: null };
+  let deleteConfirmationState = false;
+  let currentEditIndices: number[] = []; // Track which rows are being edited
 
   document.addEventListener('DOMContentLoaded', () => {
     const gridLoading = document.getElementById('grid-loading');
@@ -136,6 +141,68 @@ import Text from "@/components/fundations/elements/Text.astro";
       hideProcessingLoading();
     });
 
+    // Function declarations need to be before they're used
+    function resetDeleteButton() {
+      deleteConfirmationState = false;
+      const deleteBtn = document.getElementById('delete-edit-btn');
+      const deleteBtnText = document.getElementById('delete-btn-text');
+      
+      if (deleteBtn && deleteBtnText) {
+        deleteBtnText.textContent = currentEditIndices.length === 1 ? 'Delete' : `Delete ${currentEditIndices.length}`;
+        deleteBtn.className = 'px-4 py-2 text-sm text-red-600 border border-red-300 rounded-md hover:bg-red-50 cursor-pointer';
+      }
+    }
+
+    function handleDeleteFromModal(event: Event) {
+      event.preventDefault();
+      
+      const deleteBtn = document.getElementById('delete-edit-btn');
+      const deleteBtnText = document.getElementById('delete-btn-text');
+      
+      if (!deleteConfirmationState) {
+        // First click - change to confirmation state
+        deleteConfirmationState = true;
+        
+        if (deleteBtn && deleteBtnText) {
+          deleteBtnText.textContent = 'Confirm Delete';
+          deleteBtn.className = 'px-4 py-2 text-sm text-white bg-red-600 border border-red-600 rounded-md hover:bg-red-700 cursor-pointer';
+        }
+      } else {
+        // Second click - actually delete and close modal
+        performDeleteFromModal();
+      }
+    }
+
+    function performDeleteFromModal() {
+      if (currentEditIndices.length === 0) return;
+      
+      // Sort indices in descending order to avoid index shifting issues
+      const sortedIndices = currentEditIndices.sort((a, b) => b - a);
+      
+      sortedIndices.forEach(index => {
+        displayData.rows.splice(index, 1);
+      });
+      
+      // Clear selected rows since they've been deleted
+      selectedRows.clear();
+      
+      // Re-render grid and close modal
+      renderGrid();
+      closeModal();
+      
+      // Notify container of data update
+      window.dispatchEvent(new CustomEvent('csv-data-updated', { 
+        detail: { data: displayData, format: currentFormat } 
+      }));
+    }
+
+    function closeModal() {
+      editModal?.classList.add('hidden');
+      // Reset delete state when closing modal
+      resetDeleteButton();
+      currentEditIndices = [];
+    }
+
     // Bulk action handlers
     document.getElementById('bulk-delete-btn')?.addEventListener('click', deleteSelected);
     document.getElementById('bulk-edit-btn')?.addEventListener('click', editSelected);
@@ -143,6 +210,7 @@ import Text from "@/components/fundations/elements/Text.astro";
     // Modal handlers
     document.getElementById('close-modal-btn')?.addEventListener('click', closeModal);
     document.getElementById('cancel-edit-btn')?.addEventListener('click', closeModal);
+    document.getElementById('delete-edit-btn')?.addEventListener('click', handleDeleteFromModal);
     document.getElementById('edit-form')?.addEventListener('submit', saveEdit);
 
     function renderGrid() {
@@ -493,6 +561,10 @@ import Text from "@/components/fundations/elements/Text.astro";
       if (saveBtnText) saveBtnText.textContent = 'Save Changes';
       if (editMode) editMode.value = 'single';
 
+      // Track which rows are being edited and reset delete state
+      currentEditIndices = [index];
+      resetDeleteButton();
+
       // Populate form
       (document.getElementById('edit-row-index') as HTMLInputElement).value = index.toString();
       
@@ -511,6 +583,10 @@ import Text from "@/components/fundations/elements/Text.astro";
       if (modalTitle) modalTitle.textContent = `${format.displayName} Edit: ${selectedRows.size} rows`;
       if (saveBtnText) saveBtnText.textContent = 'Update All Selected';
       if (editMode) editMode.value = 'bulk';
+      
+      // Track which rows are being edited and reset delete state
+      currentEditIndices = Array.from(selectedRows);
+      resetDeleteButton();
       
       // Generate form fields with empty values for bulk editing
       generateEditForm(true);
@@ -684,10 +760,6 @@ import Text from "@/components/fundations/elements/Text.astro";
       }
 
       return fieldDiv;
-    }
-
-    function closeModal() {
-      editModal?.classList.add('hidden');
     }
 
     function saveEdit(event: Event) {
