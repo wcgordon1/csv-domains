@@ -7,6 +7,11 @@ import DataGrid from "./DataGrid.astro";
 
 <!-- Data Grid Container - Main orchestrator for format switching and data display -->
 <div id="data-section" class="hidden mt-8">
+  <!-- Format switcher buttons positioned above and to the left -->
+  <div class="mb-3">
+    <FormatSwitcher />
+  </div>
+  
   <div class="flex justify-between items-center mb-4">
     <div>
       <Text tag="h3" variant="textLG" class="font-semibold text-base-800" id="data-title">
@@ -17,7 +22,6 @@ import DataGrid from "./DataGrid.astro";
       </Text>
     </div>
     <div class="flex gap-2 items-center">
-      <FormatSwitcher />
       <FormatActions />
     </div>
   </div>
