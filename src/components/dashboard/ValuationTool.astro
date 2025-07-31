@@ -1,0 +1,301 @@
+---
+// Components
+import Text from "@/components/fundations/elements/Text.astro";
+import Link from "@/components/fundations/elements/Link.astro";
+import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
+
+interface Props {
+  class?: string;
+}
+
+const { class: extraClass = "" } = Astro.props;
+---
+
+<div class={`flex items-center justify-center min-h-screen py-4 ${extraClass}`}>
+  <div id="valuation-form" class="w-full max-w-lg">
+    <div class="outline outline-base-200 p-8 rounded-2xl shadow-xl bg-white">
+      <Text
+        tag="h1"
+        variant="displayXL"
+        class="font-semibold tracking-tighter text-base-800 text-center mb-4"
+      >
+        Domain Valuation Tool
+      </Text>
+      
+      <Text
+        tag="p"
+        variant="textLG"
+        class="mb-8 font-medium text-base-600 text-center"
+      >
+        Get professional domain valuations using industry-standard formulas
+      </Text>
+
+      <div class="space-y-6">
+      <div>
+        <label for="domain" class="block text-sm font-medium text-base-700 mb-2">
+          Domain Name
+        </label>
+        <input
+          type="text"
+          id="domain"
+          name="domain"
+          placeholder="example.com"
+          class="w-full px-4 py-3 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 cursor-text"
+        />
+      </div>
+
+      <div>
+        <label for="cpc" class="block text-sm font-medium text-base-700 mb-2">
+          Cost Per Click ($)
+        </label>
+        <input
+          type="number"
+          id="cpc"
+          name="cpc"
+          placeholder="10.88"
+          step="0.01"
+          min="0"
+          class="w-full px-4 py-3 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 cursor-text"
+        />
+      </div>
+
+      <div>
+        <label for="searchVolume" class="block text-sm font-medium text-base-700 mb-2">
+          Monthly Search Volume
+        </label>
+        <input
+          type="number"
+          id="searchVolume"
+          name="searchVolume"
+          placeholder="27100"
+          min="0"
+          class="w-full px-4 py-3 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 cursor-text"
+        />
+      </div>
+
+      <button
+        id="calculate-btn"
+        type="button"
+        class="w-full inline-flex items-center justify-center gap-2 bg-base-800 text-white px-6 py-3 rounded-xl font-medium hover:bg-base-700 transition-colors duration-200 group cursor-pointer"
+      >
+        Calculate valuation
+        <ChevronRight
+          size="sm"
+          class="duration-300 easy-out-in group-hover:translate-x-2"
+        />
+      </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="valuation-results" class="hidden w-full max-w-5xl">
+    <div class="flex items-center justify-between mb-8">
+      <Text
+        tag="h2"
+        variant="displayLG"
+        class="font-semibold tracking-tighter text-base-800"
+      >
+        Valuation Results
+      </Text>
+      
+      <button
+        id="clear-btn"
+        type="button"
+        class="inline-flex items-center gap-2 bg-base-200 text-base-700 px-4 py-2 rounded-xl font-medium hover:bg-base-300 transition-colors duration-200 cursor-pointer"
+      >
+        Clear form
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Rosener Equation (12 months) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Rosener Equation (12 months)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="rosener-12"></div>
+        <p class="text-xs text-base-500">Search Volume × CPC × 35% CTR × 12 months</p>
+      </div>
+
+      <!-- Rosener Equation (24 months) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Rosener Equation (24 months)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="rosener-24"></div>
+        <p class="text-xs text-base-500">Search Volume × CPC × 35% CTR × 24 months</p>
+      </div>
+
+      <!-- Second Position CTR -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Second Position CTR</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="second-position"></div>
+        <p class="text-xs text-base-500">Search Volume × CPC × 20% CTR × 12 months</p>
+      </div>
+
+      <!-- Non-.com TLD -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Non-.com TLD Value</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="non-com"></div>
+        <p class="text-xs text-base-500">Rosener value × 10% (non-.com discount)</p>
+      </div>
+
+      <!-- Hyphenated Domain (10%) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Hyphenated Domain (10%)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="hyphenated-10"></div>
+        <p class="text-xs text-base-500">Rosener value × 10% (hyphenated discount)</p>
+      </div>
+
+      <!-- Hyphenated Domain (5%) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Hyphenated Domain (5%)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="hyphenated-5"></div>
+        <p class="text-xs text-base-500">Rosener value × 5% (hyphenated discount)</p>
+      </div>
+
+      <!-- Investor Discount (33%) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Investor Wholesale (33%)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="investor-33"></div>
+        <p class="text-xs text-base-500">Rosener value × 33% (wholesale price)</p>
+      </div>
+
+      <!-- Investor Discount (10%) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Investor Wholesale (10%)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="investor-10"></div>
+        <p class="text-xs text-base-500">Rosener value × 10% (wholesale price)</p>
+      </div>
+
+      <!-- Rick Schwartz Formula (4 years) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Rick Schwartz Formula (4 years)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="rick-schwartz-4"></div>
+        <p class="text-xs text-base-500">(Search Volume × CPC) ÷ 4 years to #1</p>
+      </div>
+
+      <!-- Rick Schwartz Formula (2 years) -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Rick Schwartz Formula (2 years)</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="rick-schwartz-2"></div>
+        <p class="text-xs text-base-500">(Search Volume × CPC) ÷ 2 years to #1</p>
+      </div>
+
+      <!-- Traffic Value Metric -->
+      <div class="outline outline-base-200 p-6 rounded-2xl shadow-lg bg-white">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Traffic Value Metric</h3>
+        <div class="text-2xl font-bold text-teal-600 mb-2" id="traffic-value"></div>
+        <p class="text-xs text-base-500">Search Volume × CPC × 35% CTR (monthly)</p>
+      </div>
+
+      <!-- Domain Info -->
+      <div class="outline outline-teal-200 p-6 rounded-2xl shadow-lg bg-teal-50">
+        <h3 class="text-lg font-semibold text-base-800 mb-2">Domain Analysis</h3>
+        <div class="space-y-1">
+          <div class="text-sm text-base-600" id="domain-name"></div>
+          <div class="text-sm text-base-600" id="domain-inputs"></div>
+          <div class="text-sm text-base-600" id="domain-type"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
+
+  function calculateValuations() {
+    const domain = (document.getElementById('domain') as HTMLInputElement).value.trim();
+    const cpc = parseFloat((document.getElementById('cpc') as HTMLInputElement).value);
+    const searchVolume = parseInt((document.getElementById('searchVolume') as HTMLInputElement).value);
+
+    if (!domain || !cpc || !searchVolume) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    // Basic Rosener Equation values
+    const ctr35 = 0.35;
+    const ctr20 = 0.20;
+    
+    // 1. Rosener Equation (12 months)
+    const rosener12 = searchVolume * cpc * ctr35 * 12;
+    document.getElementById('rosener-12').textContent = formatCurrency(rosener12);
+    
+    // 2. Rosener Equation (24 months)
+    const rosener24 = searchVolume * cpc * ctr35 * 24;
+    document.getElementById('rosener-24').textContent = formatCurrency(rosener24);
+    
+    // 3. Second Position CTR
+    const secondPosition = searchVolume * cpc * ctr20 * 12;
+    document.getElementById('second-position').textContent = formatCurrency(secondPosition);
+    
+    // 4. Non-.com TLD (10% of Rosener)
+    const nonCom = rosener12 * 0.10;
+    document.getElementById('non-com').textContent = formatCurrency(nonCom);
+    
+    // 5. Hyphenated Domain (10% and 5%)
+    const hyphenated10 = rosener12 * 0.10;
+    const hyphenated5 = rosener12 * 0.05;
+    document.getElementById('hyphenated-10').textContent = formatCurrency(hyphenated10);
+    document.getElementById('hyphenated-5').textContent = formatCurrency(hyphenated5);
+    
+    // 6. Investor Discount (33% and 10%)
+    const investor33 = rosener12 * 0.33;
+    const investor10 = rosener12 * 0.10;
+    document.getElementById('investor-33').textContent = formatCurrency(investor33);
+    document.getElementById('investor-10').textContent = formatCurrency(investor10);
+    
+    // 7. Rick Schwartz Formula (4 years and 2 years)
+    const rickSchwartz4 = (searchVolume * cpc) / 4;
+    const rickSchwartz2 = (searchVolume * cpc) / 2;
+    document.getElementById('rick-schwartz-4').textContent = formatCurrency(rickSchwartz4);
+    document.getElementById('rick-schwartz-2').textContent = formatCurrency(rickSchwartz2);
+    
+    // 8. Traffic Value Metric
+    const trafficValue = searchVolume * cpc * ctr35;
+    document.getElementById('traffic-value').textContent = formatCurrency(trafficValue);
+    
+    // Domain info
+    document.getElementById('domain-name').textContent = `Domain: ${domain}`;
+    document.getElementById('domain-inputs').textContent = `${searchVolume.toLocaleString()} searches/month × $${cpc} CPC`;
+    
+    // Analyze domain type
+    let domainType = 'Standard .com domain';
+    if (!domain.endsWith('.com')) {
+      domainType = 'Non-.com TLD';
+    }
+    if (domain.includes('-')) {
+      domainType += ' (Hyphenated)';
+    }
+    document.getElementById('domain-type').textContent = `Type: ${domainType}`;
+
+    // Show results, hide form
+    document.getElementById('valuation-form').classList.add('hidden');
+    document.getElementById('valuation-results').classList.remove('hidden');
+  }
+
+  function clearForm() {
+    (document.getElementById('domain') as HTMLInputElement).value = '';
+    (document.getElementById('cpc') as HTMLInputElement).value = '';
+    (document.getElementById('searchVolume') as HTMLInputElement).value = '';
+    
+    document.getElementById('valuation-form').classList.remove('hidden');
+    document.getElementById('valuation-results').classList.add('hidden');
+  }
+
+  // Event listeners
+  document.getElementById('calculate-btn').addEventListener('click', calculateValuations);
+  document.getElementById('clear-btn').addEventListener('click', clearForm);
+  
+  // Enter key support
+  document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && document.getElementById('valuation-results').classList.contains('hidden')) {
+      calculateValuations();
+    }
+  });
+</script>
