@@ -138,8 +138,8 @@ import Text from "@/components/fundations/elements/Text.astro";
             const increaseAmount = currentPrice * (percentage / 100);
             const newPrice = currentPrice + increaseAmount;
             
-            // Round to 2 decimal places and update
-            row[priceColumnDisplayName] = newPrice.toFixed(2);
+            // Round to nearest dollar and update
+            row[priceColumnDisplayName] = Math.round(newPrice).toString();
             updatedCount++;
           }
         }
