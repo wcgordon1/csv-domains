@@ -3,6 +3,7 @@ import Text from "@/components/fundations/elements/Text.astro";
 import FormatSwitcher from "./FormatSwitcher.astro";
 import FormatActions from "./FormatActions.astro";
 import PriceIncrease from "./PriceIncrease.astro";
+import PriceDecrease from "./PriceDecrease.astro";
 import DataGrid from "./DataGrid.astro";
 ---
 
@@ -29,6 +30,9 @@ import DataGrid from "./DataGrid.astro";
   </div>
   <!-- Price Increase Tools -->
   <PriceIncrease />
+  
+  <!-- Price Decrease Tools -->
+  <PriceDecrease />
 
   <!-- Loading state for format transformation -->
   <div id="format-loading" class="hidden bg-white border border-base-200 rounded-lg p-8 text-center">

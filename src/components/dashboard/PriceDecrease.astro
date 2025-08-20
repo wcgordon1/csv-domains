@@ -1,0 +1,203 @@
+---
+import Text from "@/components/fundations/elements/Text.astro";
+---
+
+<!-- Price Decrease Component - Bulk price reduction tools -->
+<div class="bg-base-50 border border-base-200 rounded-lg p-4 mb-4">
+  <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+    <Text tag="span" variant="textSM" class="font-medium text-base-700 flex-shrink-0">
+      Reduce Price:
+    </Text>
+    <div class="flex flex-wrap gap-2">
+      <button 
+        class="price-decrease-btn px-3 py-1 text-xs font-medium text-base-600 bg-white border border-base-300 rounded hover:bg-base-50 cursor-pointer transition-colors"
+        data-percentage="5"
+      >
+        5%
+      </button>
+      <button 
+        class="price-decrease-btn px-3 py-1 text-xs font-medium text-base-600 bg-white border border-base-300 rounded hover:bg-base-50 cursor-pointer transition-colors"
+        data-percentage="10"
+      >
+        10%
+      </button>
+      <button 
+        class="price-decrease-btn px-3 py-1 text-xs font-medium text-base-600 bg-white border border-base-300 rounded hover:bg-base-50 cursor-pointer transition-colors"
+        data-percentage="15"
+      >
+        15%
+      </button>
+      <button 
+        class="price-decrease-btn px-3 py-1 text-xs font-medium text-base-600 bg-white border border-base-300 rounded hover:bg-base-50 cursor-pointer transition-colors"
+        data-percentage="20"
+      >
+        20%
+      </button>
+      <button 
+        class="price-decrease-btn px-3 py-1 text-xs font-medium text-base-600 bg-white border border-base-300 rounded hover:bg-base-50 cursor-pointer transition-colors"
+        data-percentage="25"
+      >
+        25%
+      </button>
+      <button 
+        class="price-decrease-btn px-3 py-1 text-xs font-medium text-base-600 bg-white border border-base-300 rounded hover:bg-base-50 cursor-pointer transition-colors"
+        data-percentage="30"
+      >
+        30%
+      </button>
+      <button 
+        class="price-decrease-btn px-3 py-1 text-xs font-medium text-base-600 bg-white border border-base-300 rounded hover:bg-base-50 cursor-pointer transition-colors"
+        data-percentage="35"
+      >
+        35%
+      </button>
+    </div>
+  </div>
+  <!-- Hidden status element for temporary feedback messages -->
+  <div class="hidden text-xs mt-2" id="price-decrease-status"></div>
+</div>
+
+<script>
+  import { getFormat } from '../../lib/formatConfigs.js';
+  
+  let currentFormat = 'afternic';
+  let displayData = { headers: [], rows: [] };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const priceDecreaseButtons = document.querySelectorAll('.price-decrease-btn');
+    const statusElement = document.getElementById('price-decrease-status');
+
+    // Add click handlers to percentage buttons
+    priceDecreaseButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const percentage = parseInt(target.dataset.percentage || '0');
+        if (percentage > 0) {
+          applyPriceDecrease(percentage);
+        }
+      });
+    });
+
+    // Listen for format and data updates
+    window.addEventListener('display-data-ready', (event: any) => {
+      displayData = event.detail.data;
+      currentFormat = event.detail.format;
+      updateStatusText();
+    });
+
+    window.addEventListener('format-switched', (event: any) => {
+      currentFormat = event.detail.format;
+      updateStatusText();
+    });
+
+    function updateStatusText() {
+      // Status text is now hidden by default - no need to update
+      if (statusElement) {
+        statusElement.classList.add('hidden');
+      }
+    }
+
+    function applyPriceDecrease(percentage: number) {
+      if (!displayData.rows || displayData.rows.length === 0) {
+        console.warn('No data to apply price decrease to');
+        return;
+      }
+
+      // Show loading overlay
+      showPriceProcessingLoading();
+
+      // Use setTimeout to allow UI update and show smooth loading effect
+      setTimeout(() => {
+        const format = getFormat(currentFormat);
+        let priceColumnDisplayName = '';
+        
+        // Find the price column for current format
+        if (currentFormat === 'afternic' || currentFormat === 'spaceship') {
+          priceColumnDisplayName = 'Buy Now Price';
+        } else if (currentFormat === 'sedo') {
+          priceColumnDisplayName = 'Price';
+        }
+        
+        if (!priceColumnDisplayName) {
+          console.warn('No price column found for current format');
+          hidePriceProcessingLoading();
+          return;
+        }
+
+        let updatedCount = 0;
+      
+      // Apply percentage decrease to all rows
+      displayData.rows.forEach(row => {
+        const currentPriceStr = row[priceColumnDisplayName];
+        if (currentPriceStr && currentPriceStr.trim() !== '') {
+          // Parse current price (remove any currency symbols, commas, etc.)
+          const currentPrice = parseFloat(currentPriceStr.toString().replace(/[^0-9.-]/g, ''));
+          
+          if (!isNaN(currentPrice) && currentPrice > 0) {
+            // Calculate new price
+            const decreaseAmount = currentPrice * (percentage / 100);
+            const newPrice = currentPrice - decreaseAmount;
+            
+            // Ensure price doesn't go below 1 and round to nearest dollar
+            const finalPrice = Math.max(1, Math.round(newPrice));
+            row[priceColumnDisplayName] = finalPrice.toString();
+            updatedCount++;
+          }
+        }
+      });
+
+      if (updatedCount > 0) {
+        // Show temporary success feedback
+        if (statusElement) {
+          statusElement.textContent = `✓ Reduced ${updatedCount} prices by ${percentage}%`;
+          statusElement.className = 'text-xs text-green-600 mt-2';
+          statusElement.classList.remove('hidden');
+          
+          // Reset after 3 seconds
+          setTimeout(() => {
+            statusElement.classList.add('hidden');
+          }, 3000);
+        }
+
+        // Notify other components that data has been updated
+        window.dispatchEvent(new CustomEvent('csv-data-updated', { 
+          detail: { data: displayData, format: currentFormat } 
+        }));
+        
+        // Hide loading overlay
+        hidePriceProcessingLoading();
+      } else {
+        // Show error feedback
+        if (statusElement) {
+          statusElement.textContent = `No valid prices found to reduce`;
+          statusElement.className = 'text-xs text-red-600 mt-2';
+          statusElement.classList.remove('hidden');
+          
+          // Reset after 3 seconds
+          setTimeout(() => {
+            statusElement.classList.add('hidden');
+          }, 3000);
+        }
+        
+        // Hide loading overlay
+        hidePriceProcessingLoading();
+      }
+      }, 100); // Small delay to show loading effect
+    }
+
+    function showPriceProcessingLoading() {
+      // Trigger the sort loading overlay in the data grid
+      window.dispatchEvent(new CustomEvent('show-processing-overlay', {
+        detail: { message: 'Processing price reductions...' }
+      }));
+    }
+
+    function hidePriceProcessingLoading() {
+      // Hide the sort loading overlay in the data grid
+      window.dispatchEvent(new CustomEvent('hide-processing-overlay'));
+    }
+
+    // Initialize status text
+    updateStatusText();
+  });
+</script>
